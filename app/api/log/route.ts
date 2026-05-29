@@ -1,0 +1,110 @@
+import { NextResponse } from "next/server";
+import { getUserClient, LOG_TABLE } from "@/lib/supabase";
+import type { LogEntry, Nutrition } from "@/lib/types";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+interface LogRow {
+  id: string;
+  food_name: string;
+  calories: number;
+  nutrition: Nutrition | null;
+  created_at: string;
+}
+
+const EMPTY_NUTRITION: Nutrition = {
+  protein_g: null,
+  carbs_g: null,
+  fat_g: null,
+  fiber_g: null,
+  sugar_g: null,
+  sodium_mg: null,
+  potassium_mg: null,
+  calcium_mg: null,
+  iron_mg: null,
+};
+
+function rowToEntry(row: LogRow): LogEntry {
+  return {
+    id: row.id,
+    foodName: row.food_name,
+    calories: row.calories,
+    nutrition: row.nutrition ?? { ...EMPTY_NUTRITION },
+    addedAt: new Date(row.created_at).getTime(),
+  };
+}
+
+const DB_ERROR = "Could not reach the database. Please try again.";
+
+// List the signed-in user's log entries (oldest first).
+export async function GET(request: Request) {
+  const auth = await getUserClient(request);
+  if (!auth) return NextResponse.json({ error: "Not signed in." }, { status: 401 });
+  try {
+    const { data, error } = await auth.supabase
+      .from(LOG_TABLE)
+      .select("id, food_name, calories, nutrition, created_at")
+      .eq("user_id", auth.user.id)
+      .order("created_at", { ascending: true });
+    if (error) throw error;
+    return NextResponse.json((data as LogRow[]).map(rowToEntry));
+  } catch (err) {
+    console.error("log GET error:", err);
+    return NextResponse.json({ error: DB_ERROR }, { status: 502 });
+  }
+}
+
+// Add an entry for the signed-in user.
+export async function POST(request: Request) {
+  const auth = await getUserClient(request);
+  if (!auth) return NextResponse.json({ error: "Not signed in." }, { status: 401 });
+
+  let body: { foodName?: string; calories?: number; nutrition?: Nutrition };
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+  }
+
+  const foodName = String(body.foodName ?? "").trim();
+  if (!foodName) {
+    return NextResponse.json({ error: "Missing food name." }, { status: 400 });
+  }
+
+  try {
+    const { data, error } = await auth.supabase
+      .from(LOG_TABLE)
+      .insert({
+        user_id: auth.user.id,
+        food_name: foodName,
+        calories: Math.max(0, Math.round(Number(body.calories) || 0)),
+        nutrition: body.nutrition ?? null,
+      })
+      .select("id, food_name, calories, nutrition, created_at")
+      .single();
+    if (error) throw error;
+    return NextResponse.json(rowToEntry(data as LogRow));
+  } catch (err) {
+    console.error("log POST error:", err);
+    return NextResponse.json({ error: DB_ERROR }, { status: 502 });
+  }
+}
+
+// Delete one entry (?id=...) or clear all of the user's entries.
+export async function DELETE(request: Request) {
+  const auth = await getUserClient(request);
+  if (!auth) return NextResponse.json({ error: "Not signed in." }, { status: 401 });
+
+  const id = new URL(request.url).searchParams.get("id");
+  try {
+    let query = auth.supabase.from(LOG_TABLE).delete().eq("user_id", auth.user.id);
+    if (id) query = query.eq("id", id);
+    const { error } = await query;
+    if (error) throw error;
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error("log DELETE error:", err);
+    return NextResponse.json({ error: DB_ERROR }, { status: 502 });
+  }
+}
