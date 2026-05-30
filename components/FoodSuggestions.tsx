@@ -5,7 +5,7 @@ import type { LogEntry } from "@/lib/types";
 import type { StoredPlan } from "@/lib/plan";
 import { getSuggestions, totalCalories } from "@/lib/api";
 import { todayKey, entriesForDay } from "@/lib/dates";
-import { sumNutrition } from "@/lib/nutrition";
+import { sumNutrition, NUTRIENT_FIELDS } from "@/lib/nutrition";
 import type { SuggestionsResult } from "@/lib/suggest";
 
 interface Props {
@@ -89,6 +89,19 @@ export default function FoodSuggestions({ entries, plan, dailyGoal }: Props) {
                 </div>
                 {s.reason && (
                   <p className="text-xs text-slate-500 dark:text-slate-400">{s.reason}</p>
+                )}
+                {s.macros && (
+                  <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-slate-500 dark:text-slate-400">
+                    {NUTRIENT_FIELDS.filter((f) => s.macros![f.key] != null).map((f) => (
+                      <span key={f.key}>
+                        {f.label}{" "}
+                        <span className="font-medium text-slate-700 dark:text-slate-300">
+                          {s.macros![f.key]}
+                          {f.unit}
+                        </span>
+                      </span>
+                    ))}
+                  </div>
                 )}
               </li>
             ))}

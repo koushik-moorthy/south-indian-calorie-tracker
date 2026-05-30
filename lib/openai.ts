@@ -177,8 +177,8 @@ Respond with ONLY a valid JSON object, no markdown, no extra text, in exactly th
 {
   "headline": "You have about 700 kcal and 40 g protein left today.",
   "suggestions": [
-    { "name": "2 idli with sambar", "calories": 220, "reason": "Light and adds protein + fiber" },
-    { "name": "Sundal (chana)", "calories": 180, "reason": "High protein and filling" }
+    { "name": "2 idli with sambar", "calories": 220, "reason": "Light and adds protein + fiber", "macros": { "protein_g": 6, "carbs_g": 44, "fat_g": 1, "fiber_g": 3, "sugar_g": 1 } },
+    { "name": "Sundal (chana)", "calories": 180, "reason": "High protein and filling", "macros": { "protein_g": 11, "carbs_g": 22, "fat_g": 4, "fiber_g": 8, "sugar_g": 2 } }
   ]
 }
 
@@ -188,6 +188,7 @@ Rules:
 - If they are AT or OVER their calorie goal, suggest only light, filling, low-calorie Tamil options (e.g. rasam, clear vegetable soup, buttermilk, sundal, cucumber, steamed sprouts) and gently note they are near their limit.
 - If nothing has been eaten yet (a fresh day), suggest a balanced spread of Tamil meals/snacks across the day that add up toward the target.
 - "calories" is an approximate number for that portion; "reason" is a short phrase on why it helps.
+- "macros" gives the approximate grams for that portion: protein_g, carbs_g, fat_g, fiber_g, sugar_g.
 - "headline" is one short sentence summarizing where they stand right now.
 - Be encouraging and practical. This is not medical advice.`;
 
