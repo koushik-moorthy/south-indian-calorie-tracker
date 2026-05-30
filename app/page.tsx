@@ -14,11 +14,11 @@ import {
   fetchLog,
   addLogEntry,
   removeLogEntry,
-  clearLog,
   fetchSettings,
   saveSettings,
   totalCalories,
 } from "@/lib/api";
+import { entriesForDay, todayKey } from "@/lib/dates";
 import type { AnalysisResult, LogEntry } from "@/lib/types";
 
 export default function Home() {
@@ -94,15 +94,18 @@ export default function Home() {
     }
   }
 
-  async function handleClear() {
+  async function handleClearDay(key: string) {
+    const dayItems = entriesForDay(entries, key);
+    if (dayItems.length === 0) return;
     const prev = entries;
-    setEntries([]); // optimistic
+    const ids = new Set(dayItems.map((e) => e.id));
+    setEntries((cur) => cur.filter((e) => !ids.has(e.id))); // optimistic
     setLogError(null);
     try {
-      await clearLog();
+      await Promise.all(dayItems.map((e) => removeLogEntry(e.id)));
     } catch (err) {
       setEntries(prev);
-      setLogError(err instanceof Error ? err.message : "Could not clear.");
+      setLogError(err instanceof Error ? err.message : "Could not clear the day.");
     }
   }
 
@@ -176,7 +179,7 @@ export default function Home() {
           <div className="mt-6">
             <DailyGoal
               goal={dailyGoal}
-              consumed={totalCalories(entries)}
+              consumed={totalCalories(entriesForDay(entries, todayKey()))}
               onSave={handleSaveGoal}
             />
           </div>
@@ -186,7 +189,7 @@ export default function Home() {
               entries={entries}
               loading={logLoading}
               onRemove={handleRemove}
-              onClear={handleClear}
+              onClearDay={handleClearDay}
             />
           </div>
         </>

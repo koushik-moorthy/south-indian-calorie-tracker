@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getUserClient } from "@/lib/supabase";
 import { getUserOpenAI, NoApiKeyError } from "@/lib/userOpenAI";
 import { runJsonCompletion, IMAGE_SYSTEM_PROMPT, parseAnalysis } from "@/lib/openai";
+import { sniffImageMime } from "@/lib/imageType";
 
 export const runtime = "nodejs";
 
@@ -39,10 +40,25 @@ export async function POST(request: Request) {
     );
   }
 
+  let buffer: Buffer;
+  let realType: string | null;
   try {
-    const arrayBuffer = await file.arrayBuffer();
-    const base64 = Buffer.from(arrayBuffer).toString("base64");
-    const dataUrl = `data:${file.type};base64,${base64}`;
+    buffer = Buffer.from(await file.arrayBuffer());
+    // Trust the file's actual bytes, not the client-supplied Content-Type.
+    realType = sniffImageMime(buffer.subarray(0, 12));
+  } catch {
+    return NextResponse.json({ error: "Invalid upload." }, { status: 400 });
+  }
+
+  if (!realType || !ALLOWED_TYPES.includes(realType)) {
+    return NextResponse.json(
+      { error: "That file is not a valid JPG, PNG, or WEBP image." },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const dataUrl = `data:${realType};base64,${buffer.toString("base64")}`;
 
     const { client, model } = await getUserOpenAI(auth.supabase, auth.user.id);
     const raw = await runJsonCompletion(client, model, [

@@ -75,14 +75,6 @@ export async function removeLogEntry(id: string): Promise<void> {
   if (!res.ok) throw await asError(res, "Could not remove the item.");
 }
 
-export async function clearLog(): Promise<void> {
-  const res = await fetch("/api/log", {
-    method: "DELETE",
-    headers: await authHeaders(),
-  });
-  if (!res.ok) throw await asError(res, "Could not clear your log.");
-}
-
 // ---- Settings ----
 
 export async function fetchSettings(): Promise<UserSettings> {
