@@ -6,16 +6,12 @@ const NUTRITION_SCHEMA_SNIPPET = `  "nutrition": {
     "carbs_g": 45,
     "fat_g": 12,
     "fiber_g": 3,
-    "sugar_g": 2,
-    "sodium_mg": 450,
-    "potassium_mg": 200,
-    "calcium_mg": 30,
-    "iron_mg": 1.5
+    "sugar_g": 2
   }`;
 
-const NUTRITION_RULES = `- "nutrition" holds the macro and micro breakdown for the TOTAL quantity (not per unit).
-- Macros (protein_g, carbs_g, fat_g, fiber_g, sugar_g) are in grams; micros (sodium_mg, potassium_mg, calcium_mg, iron_mg) are in milligrams.
-- Use null for any nutrition value you cannot reasonably estimate. Do not omit keys.`;
+const NUTRITION_RULES = `- "nutrition" holds the macro breakdown (in grams) for the TOTAL quantity (not per unit).
+- All values (protein_g, carbs_g, fat_g, fiber_g, sugar_g) are in grams.
+- Use null for any value you cannot reasonably estimate. Do not omit keys.`;
 
 const DEFAULT_MODEL = "gpt-4o-mini";
 
@@ -127,6 +123,74 @@ Rules:
 ${NUTRITION_RULES}
 - If the image does not contain food, set estimated_calories to 0, confidence to "low", all nutrition values to null, and explain in assumptions.`;
 
+export const PLAN_SYSTEM_PROMPT = `You are a careful nutrition and fitness coach. Given a person's stats and a target, estimate a SAFE daily calorie intake to reach their goal weight by the target date.
+
+Respond with ONLY a valid JSON object, no markdown, no extra text, in exactly this shape:
+
+{
+  "bmr": 1600,
+  "tdee": 2300,
+  "daily_calories": 1850,
+  "weekly_rate_kg": -0.5,
+  "macros": { "protein_g": 140, "carbs_g": 180, "fat_g": 55, "fiber_g": 30, "sugar_g": 40 },
+  "summary": "Modest deficit with high protein to preserve muscle.",
+  "safety_note": "Consult a doctor before large changes.",
+  "feasible": true,
+  "adjusted_target_date": null
+}
+
+Rules:
+- Estimate "bmr" with Mifflin-St Jeor, or Katch-McArdle if a body fat % is provided. Then "tdee" by applying the activity level.
+- "daily_calories" is the recommended daily intake to reach the goal weight by the target date.
+- "weekly_rate_kg" is the implied weekly weight change (negative = loss, positive = gain).
+- NEVER recommend below 1200 kcal/day for women or 1500 kcal/day for men.
+- NEVER recommend a rate faster than ~0.75 kg/week (or ~1% of body weight per week). If the requested timespan needs a faster rate, set "feasible" to false, set "daily_calories" to the value at the maximum SAFE rate, and put a realistic achievable date in "adjusted_target_date" (YYYY-MM-DD).
+- For weight gain, recommend a modest surplus (~0.25–0.5 kg/week).
+- "macros" are daily gram targets. protein_g, carbs_g and fat_g should roughly sum to daily_calories (protein 4 kcal/g, carbs 4, fat 9); prioritize adequate protein. "fiber_g" is a recommended daily fiber target and "sugar_g" a recommended daily added-sugar limit.
+- "summary" and "safety_note" are each ONE short sentence.
+- Use null for "bmr"/"tdee" only if you genuinely cannot estimate them.`;
+
+export const INSIGHTS_SYSTEM_PROMPT = `You are a supportive, encouraging nutrition coach. Given a user's calorie target, their goal, and how they actually ate today, this week, and this month, give brief, specific, motivating insights.
+
+Respond with ONLY a valid JSON object, no markdown, no extra text, in exactly this shape:
+
+{
+  "headline": "Great consistency today!",
+  "day": "You came in about 150 kcal under target.",
+  "week": "Your weekly average is on track with your plan.",
+  "month": "Steady progress over the month.",
+  "goal": "At this pace you'll reach your goal near your target date.",
+  "projected_change_kg": -0.05
+}
+
+Rules:
+- Each text field is ONE short, encouraging sentence. Use specific numbers when helpful.
+- "projected_change_kg" estimates the weight change implied by TODAY's intake versus maintenance (TDEE): (today_calories - tdee) / 7700. Negative means loss, positive means gain. Round to 2 decimals. Use null if TDEE is unknown.
+- If the user ate OVER maintenance, gently quantify the gain in "day" (e.g. "about 250 kcal over maintenance — roughly +0.03 kg if repeated daily"). If over the target but still under maintenance, reassure them they are still progressing.
+- If fasting information is provided, briefly acknowledge their fast (e.g. hitting their fasting window) in the headline or day note.
+- Never shame the user — always encourage. This is not medical advice.`;
+
+export const SUGGEST_SYSTEM_PROMPT = `You are a friendly nutrition coach who specializes in Tamil and South Indian home cooking. Based on what the user has eaten today and their remaining calorie and macro budget, suggest specific foods for the rest of the day.
+
+Respond with ONLY a valid JSON object, no markdown, no extra text, in exactly this shape:
+
+{
+  "headline": "You have about 700 kcal and 40 g protein left today.",
+  "suggestions": [
+    { "name": "2 idli with sambar", "calories": 220, "reason": "Light and adds protein + fiber" },
+    { "name": "Sundal (chana)", "calories": 180, "reason": "High protein and filling" }
+  ]
+}
+
+Rules:
+- Suggest 3 to 5 specific dishes, snacks, or drinks. PREFER Tamil / South Indian options (e.g. idli, dosa, pongal, sundal, rasam, sambar, paruppu, kuzhambu, sprouts, ragi, buttermilk/mor, vegetable poriyal), but everyday options are fine when helpful.
+- Tailor to the REMAINING budget: prioritize the macros they are short on (especially protein and fiber) and try to stay within the remaining calories.
+- If they are AT or OVER their calorie goal, suggest only light, filling, low-calorie Tamil options (e.g. rasam, clear vegetable soup, buttermilk, sundal, cucumber, steamed sprouts) and gently note they are near their limit.
+- If nothing has been eaten yet (a fresh day), suggest a balanced spread of Tamil meals/snacks across the day that add up toward the target.
+- "calories" is an approximate number for that portion; "reason" is a short phrase on why it helps.
+- "headline" is one short sentence summarizing where they stand right now.
+- Be encouraging and practical. This is not medical advice.`;
+
 function normalizeConfidence(value: unknown): Confidence {
   const v = String(value || "").toLowerCase();
   if (v === "high" || v === "medium" || v === "low") return v;
@@ -155,10 +219,6 @@ function parseNutrition(value: unknown): Nutrition {
     fat_g: toNullableNumber(n.fat_g, 1),
     fiber_g: toNullableNumber(n.fiber_g, 1),
     sugar_g: toNullableNumber(n.sugar_g, 1),
-    sodium_mg: toNullableNumber(n.sodium_mg),
-    potassium_mg: toNullableNumber(n.potassium_mg),
-    calcium_mg: toNullableNumber(n.calcium_mg),
-    iron_mg: toNullableNumber(n.iron_mg, 1),
   };
 }
 

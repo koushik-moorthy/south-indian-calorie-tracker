@@ -1,4 +1,4 @@
-# South Indian Calorie Tracker
+# FoodCal
 
 A lightweight web app to quickly estimate calories from South Indian foods using
 either a **text description** ("2 idlis", "1 masala dosa") or a **food photo**.

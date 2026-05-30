@@ -19,10 +19,6 @@ const EMPTY_NUTRITION: Nutrition = {
   fat_g: null,
   fiber_g: null,
   sugar_g: null,
-  sodium_mg: null,
-  potassium_mg: null,
-  calcium_mg: null,
-  iron_mg: null,
 };
 
 function rowToEntry(row: LogRow): LogEntry {

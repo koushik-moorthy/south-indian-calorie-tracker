@@ -16,7 +16,7 @@ export async function GET(request: Request) {
   try {
     const { data, error } = await auth.supabase
       .from(SETTINGS_TABLE)
-      .select("openai_key_cipher, model, daily_calorie_goal")
+      .select("openai_key_cipher, model, daily_calorie_goal, plan, fasting")
       .eq("user_id", auth.user.id)
       .maybeSingle();
     if (error) throw error;
@@ -24,6 +24,8 @@ export async function GET(request: Request) {
       hasKey: Boolean(data?.openai_key_cipher),
       model: data?.model || DEFAULT_MODEL,
       dailyGoal: data?.daily_calorie_goal ?? null,
+      plan: data?.plan ?? null,
+      fasting: data?.fasting ?? null,
     });
   } catch (err) {
     console.error("settings GET error:", err);
@@ -39,7 +41,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Not signed in." }, { status: 401 });
   }
 
-  let body: { apiKey?: string; model?: string; dailyGoal?: number | null };
+  let body: {
+    apiKey?: string;
+    model?: string;
+    dailyGoal?: number | null;
+    plan?: unknown;
+    fasting?: unknown;
+  };
   try {
     body = await request.json();
   } catch {
@@ -68,6 +76,14 @@ export async function POST(request: Request) {
       goal === null || !Number.isFinite(goal) || goal <= 0
         ? null
         : Math.round(goal);
+  }
+
+  if (body.plan !== undefined) {
+    payload.plan = body.plan; // stored as JSONB; null clears it
+  }
+
+  if (body.fasting !== undefined) {
+    payload.fasting = body.fasting; // stored as JSONB; null clears it
   }
 
   try {

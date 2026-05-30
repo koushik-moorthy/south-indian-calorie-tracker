@@ -1,19 +1,12 @@
 import type { AnalysisResult, Nutrition } from "./types";
 
-/**
- * Decimal places kept per nutrient when scaling, matching the precision the
- * analysis parser uses (grams + iron to 1 dp; other milligram micros to 0 dp).
- */
+/** Macros are all in grams, kept to 1 decimal place when scaling. */
 const DECIMALS: Record<keyof Nutrition, number> = {
   protein_g: 1,
   carbs_g: 1,
   fat_g: 1,
   fiber_g: 1,
   sugar_g: 1,
-  sodium_mg: 0,
-  potassium_mg: 0,
-  calcium_mg: 0,
-  iron_mg: 1,
 };
 
 function round(value: number, decimals: number): number {

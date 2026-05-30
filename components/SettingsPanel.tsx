@@ -1,14 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MODEL_SUGGESTIONS, DEFAULT_MODEL } from "@/lib/settings";
+import { MODEL_OPTIONS, DEFAULT_MODEL } from "@/lib/settings";
 import { fetchSettings, saveSettings } from "@/lib/api";
+
+const CUSTOM_MODEL = "__custom__";
+const isKnownModel = (m: string) => MODEL_OPTIONS.some((o) => o.value === m);
 
 export default function SettingsPanel() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [hasKey, setHasKey] = useState(false);
   const [model, setModel] = useState(DEFAULT_MODEL);
+  const [customMode, setCustomMode] = useState(false);
   const [apiKeyInput, setApiKeyInput] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -19,6 +23,7 @@ export default function SettingsPanel() {
       .then((s) => {
         setHasKey(s.hasKey);
         setModel(s.model);
+        setCustomMode(Boolean(s.model) && !isKnownModel(s.model));
         if (!s.hasKey) setOpen(true); // prompt first-time users for a key
       })
       .catch((err: Error) => setError(err.message))
@@ -38,6 +43,7 @@ export default function SettingsPanel() {
       const s = await fetchSettings();
       setHasKey(s.hasKey);
       setModel(s.model);
+      setCustomMode(Boolean(s.model) && !isKnownModel(s.model));
       setApiKeyInput("");
       setSavedMsg("Saved.");
     } catch (err) {
@@ -99,24 +105,43 @@ export default function SettingsPanel() {
             <label htmlFor="model" className="block text-sm font-medium text-slate-700 dark:text-slate-300">
               Model
             </label>
-            <input
+            <select
               id="model"
-              list="model-suggestions"
-              type="text"
-              value={model}
-              onChange={(e) => setModel(e.target.value)}
-              placeholder={DEFAULT_MODEL}
-              autoComplete="off"
-              spellCheck={false}
+              value={customMode ? CUSTOM_MODEL : model}
+              onChange={(e) => {
+                const v = e.target.value;
+                if (v === CUSTOM_MODEL) {
+                  setCustomMode(true);
+                } else {
+                  setCustomMode(false);
+                  setModel(v);
+                }
+              }}
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:ring-brand-500/30"
-            />
-            <datalist id="model-suggestions">
-              {MODEL_SUGGESTIONS.map((m) => (
-                <option key={m} value={m} />
+            >
+              {MODEL_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
               ))}
-            </datalist>
+              <option value={CUSTOM_MODEL}>Custom…</option>
+            </select>
+
+            {customMode && (
+              <input
+                type="text"
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+                placeholder="Enter a model name (e.g. gpt-4.1)"
+                autoComplete="off"
+                spellCheck={false}
+                className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 font-mono text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:ring-brand-500/30"
+              />
+            )}
+
             <p className="text-xs text-slate-400">
-              Use a vision-capable model (e.g. gpt-4o-mini) for image analysis.
+              Pick a vision-capable model for image analysis, or choose Custom to enter
+              another model your key supports.
             </p>
           </div>
 

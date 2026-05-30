@@ -8,10 +8,6 @@ const NUTRITION: Nutrition = {
   fat_g: 0.4,
   fiber_g: 1.2,
   sugar_g: 0.5,
-  sodium_mg: 200,
-  potassium_mg: 90,
-  calcium_mg: 12,
-  iron_mg: 1.1,
 };
 
 const EMPTY_NUTRITION: Nutrition = {
@@ -20,10 +16,6 @@ const EMPTY_NUTRITION: Nutrition = {
   fat_g: null,
   fiber_g: null,
   sugar_g: null,
-  sodium_mg: null,
-  potassium_mg: null,
-  calcium_mg: null,
-  iron_mg: null,
 };
 
 function entry(partial: Partial<LogEntry>): LogEntry {
@@ -42,7 +34,7 @@ describe("entriesToCsv", () => {
     const csv = entriesToCsv([]);
     const lines = csv.split("\n");
     expect(lines[0]).toBe(
-      "Date,Time,Food,Calories,Protein (g),Carbs (g),Fat (g),Fiber (g),Sugar (g),Sodium (mg),Potassium (mg),Calcium (mg),Iron (mg)"
+      "Date,Time,Food,Calories,Protein (g),Carbs (g),Fat (g),Fiber (g),Sugar (g)"
     );
   });
 
@@ -53,13 +45,13 @@ describe("entriesToCsv", () => {
   it("writes the local date, time, food, calories and nutrients", () => {
     const csv = entriesToCsv([entry({})]);
     const row = csv.split("\n")[1];
-    expect(row).toBe("2024-01-05,09:05,Idli,130,4.5,26,0.4,1.2,0.5,200,90,12,1.1");
+    expect(row).toBe("2024-01-05,09:05,Idli,130,4.5,26,0.4,1.2,0.5");
   });
 
   it("leaves null nutrients as empty cells", () => {
     const csv = entriesToCsv([entry({ nutrition: EMPTY_NUTRITION })]);
     const row = csv.split("\n")[1];
-    expect(row).toBe("2024-01-05,09:05,Idli,130,,,,,,,,,");
+    expect(row).toBe("2024-01-05,09:05,Idli,130,,,,,");
   });
 
   it("escapes commas and quotes in the food name", () => {

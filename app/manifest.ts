@@ -7,9 +7,9 @@ import type { MetadataRoute } from "next";
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "South Indian Calorie Tracker",
-    short_name: "Calories",
-    description: "Estimate calories from South Indian foods using text or a photo.",
+    name: "FoodCal",
+    short_name: "FoodCal",
+    description: "Estimate calories from Indian food using text or a photo.",
     start_url: "/",
     display: "standalone",
     background_color: "#0f172a",
