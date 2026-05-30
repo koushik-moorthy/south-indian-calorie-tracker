@@ -8,10 +8,6 @@ const NUTRIENT_COLUMNS: Array<{ key: keyof Nutrition; header: string }> = [
   { key: "fat_g", header: "Fat (g)" },
   { key: "fiber_g", header: "Fiber (g)" },
   { key: "sugar_g", header: "Sugar (g)" },
-  { key: "sodium_mg", header: "Sodium (mg)" },
-  { key: "potassium_mg", header: "Potassium (mg)" },
-  { key: "calcium_mg", header: "Calcium (mg)" },
-  { key: "iron_mg", header: "Iron (mg)" },
 ];
 
 const CSV_HEADER = ["Date", "Time", "Food", "Calories", ...NUTRIENT_COLUMNS.map((c) => c.header)];

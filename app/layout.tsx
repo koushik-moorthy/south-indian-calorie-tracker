@@ -3,13 +3,13 @@ import "./globals.css";
 import ThemeToggle from "@/components/ThemeToggle";
 
 export const metadata: Metadata = {
-  title: "South Indian Calorie Tracker",
+  title: "FoodCal",
   description:
-    "Quickly estimate calories from South Indian foods using text or a photo.",
-  applicationName: "Calories",
+    "FoodCal — quickly estimate calories from Indian food using text or a photo.",
+  applicationName: "FoodCal",
   appleWebApp: {
     capable: true,
-    title: "Calories",
+    title: "FoodCal",
     statusBarStyle: "default",
   },
 };

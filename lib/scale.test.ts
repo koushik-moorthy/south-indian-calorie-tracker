@@ -15,10 +15,6 @@ const base: AnalysisResult = {
     fat_g: 0.4,
     fiber_g: 1.2,
     sugar_g: 0.5,
-    sodium_mg: 200,
-    potassium_mg: 90,
-    calcium_mg: 12,
-    iron_mg: 1.1,
   },
 };
 
@@ -29,8 +25,8 @@ describe("scaleResult", () => {
     expect(r.quantity).toBe(4);
     expect(r.nutrition.protein_g).toBe(9);
     expect(r.nutrition.carbs_g).toBe(52);
-    expect(r.nutrition.sodium_mg).toBe(400);
-    expect(r.nutrition.iron_mg).toBe(2.2);
+    expect(r.nutrition.fiber_g).toBe(2.4);
+    expect(r.nutrition.sugar_g).toBe(1);
   });
 
   it("keeps null nutrients null", () => {

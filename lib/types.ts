@@ -1,9 +1,8 @@
 export type Confidence = "high" | "medium" | "low";
 
 /**
- * Nutrition breakdown for the full quantity analyzed. Any value the model
- * cannot reasonably estimate is `null` and hidden in the UI.
- * Macros are in grams; micros are in milligrams.
+ * Macro breakdown (in grams) for the full quantity analyzed. Any value the
+ * model cannot reasonably estimate is `null` and hidden in the UI.
  */
 export interface Nutrition {
   protein_g: number | null;
@@ -11,10 +10,6 @@ export interface Nutrition {
   fat_g: number | null;
   fiber_g: number | null;
   sugar_g: number | null;
-  sodium_mg: number | null;
-  potassium_mg: number | null;
-  calcium_mg: number | null;
-  iron_mg: number | null;
 }
 
 /**
@@ -38,6 +33,13 @@ export interface LogEntry {
   calories: number;
   nutrition: Nutrition;
   addedAt: number; // epoch ms
+}
+
+/** A daily weight check-in for progress tracking. */
+export interface WeightEntry {
+  id: string;
+  weightKg: number;
+  recordedOn: string; // "YYYY-MM-DD"
 }
 
 /** Standard error payload returned by the API routes. */

@@ -1,8 +1,12 @@
 "use client";
 
 import { getAccessToken } from "./supabaseBrowser";
-import type { AnalysisResult, ApiError, LogEntry } from "./types";
+import type { AnalysisResult, ApiError, LogEntry, WeightEntry } from "./types";
 import type { UserSettings } from "./settings";
+import type { PlanProfile, PlanResult, StoredPlan } from "./plan";
+import type { InsightsInput, InsightsResult } from "./insights";
+import type { SuggestionInput, SuggestionsResult } from "./suggest";
+import type { FastingState } from "./fasting";
 
 async function authHeaders(json = false): Promise<Record<string, string>> {
   const token = await getAccessToken();
@@ -67,6 +71,20 @@ export async function addLogEntry(result: AnalysisResult): Promise<LogEntry> {
   return (await res.json()) as LogEntry;
 }
 
+/** Add an entry by hand (name + calories), skipping AI analysis. */
+export async function addManualEntry(
+  foodName: string,
+  calories: number
+): Promise<LogEntry> {
+  const res = await fetch("/api/log", {
+    method: "POST",
+    headers: await authHeaders(true),
+    body: JSON.stringify({ foodName, calories }),
+  });
+  if (!res.ok) throw await asError(res, "Could not add to your log.");
+  return (await res.json()) as LogEntry;
+}
+
 export async function removeLogEntry(id: string): Promise<void> {
   const res = await fetch(`/api/log?id=${encodeURIComponent(id)}`, {
     method: "DELETE",
@@ -87,6 +105,8 @@ export async function saveSettings(input: {
   apiKey?: string;
   model?: string;
   dailyGoal?: number | null;
+  plan?: StoredPlan | null;
+  fasting?: FastingState | null;
 }): Promise<void> {
   const res = await fetch("/api/settings", {
     method: "POST",
@@ -98,4 +118,71 @@ export async function saveSettings(input: {
 
 export function totalCalories(entries: LogEntry[]): number {
   return entries.reduce((sum, e) => sum + (e.calories || 0), 0);
+}
+
+// ---- Plan ----
+
+export async function createPlan(profile: PlanProfile): Promise<PlanResult> {
+  const res = await fetch("/api/plan", {
+    method: "POST",
+    headers: await authHeaders(true),
+    body: JSON.stringify(profile),
+  });
+  if (!res.ok) throw await asError(res, "Could not build your plan.");
+  return (await res.json()) as PlanResult;
+}
+
+// ---- Weight check-ins ----
+
+export async function fetchWeights(): Promise<WeightEntry[]> {
+  const res = await fetch("/api/weight", { headers: await authHeaders() });
+  if (!res.ok) throw await asError(res, "Could not load your weight history.");
+  return (await res.json()) as WeightEntry[];
+}
+
+export async function addWeight(
+  weightKg: number,
+  recordedOn?: string
+): Promise<WeightEntry> {
+  const res = await fetch("/api/weight", {
+    method: "POST",
+    headers: await authHeaders(true),
+    body: JSON.stringify({ weightKg, recordedOn }),
+  });
+  if (!res.ok) throw await asError(res, "Could not save your weight.");
+  return (await res.json()) as WeightEntry;
+}
+
+export async function removeWeight(id: string): Promise<void> {
+  const res = await fetch(`/api/weight?id=${encodeURIComponent(id)}`, {
+    method: "DELETE",
+    headers: await authHeaders(),
+  });
+  if (!res.ok) throw await asError(res, "Could not remove the check-in.");
+}
+
+// ---- Insights ----
+
+export async function getInsights(input: InsightsInput): Promise<InsightsResult> {
+  const res = await fetch("/api/insights", {
+    method: "POST",
+    headers: await authHeaders(true),
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) throw await asError(res, "Could not generate insights.");
+  return (await res.json()) as InsightsResult;
+}
+
+// ---- Food suggestions ----
+
+export async function getSuggestions(
+  input: SuggestionInput
+): Promise<SuggestionsResult> {
+  const res = await fetch("/api/suggest", {
+    method: "POST",
+    headers: await authHeaders(true),
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) throw await asError(res, "Could not get suggestions.");
+  return (await res.json()) as SuggestionsResult;
 }

@@ -2,6 +2,7 @@ import { createClient, type SupabaseClient, type User } from "@supabase/supabase
 
 export const LOG_TABLE = "log_entries";
 export const SETTINGS_TABLE = "user_settings";
+export const WEIGHT_TABLE = "weight_entries";
 
 function getConfig(): { url: string; key: string } {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
