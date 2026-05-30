@@ -78,9 +78,10 @@ have left for the day (or how far over you've gone) with a progress bar.
 ### ⏱️ Fasting window & timer
 Doing intermittent fasting? Pick a window (12:12, 16:8, 18:6, 20:4, OMAD, or a custom
 number of hours), tap **Start fast**, and a **live timer** counts your fasting time
-with a progress bar toward your target. Tap **End fast** when you break it. Your fast
-keeps running even if you close and reopen the app, and today's fast is included in
-your **End the day** review.
+with a progress bar toward your target. Tap **End fast** when you break it. Forgot to
+hit start (or stop) on time? You can **enter the exact start and end times manually**.
+Your fast keeps running even if you close and reopen the app, and today's fast is
+included in your **End the day** review.
 
 ### 🍛 "What should I eat?" suggestions
 Ask any time of day and FoodCal suggests specific **Tamil / South Indian** dishes,
