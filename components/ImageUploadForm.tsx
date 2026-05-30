@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { AnalysisResult } from "@/lib/types";
 import { analyzeImage } from "@/lib/api";
+import CameraCapture from "@/components/CameraCapture";
 
 interface Props {
   onResult: (result: AnalysisResult) => void;
@@ -17,6 +18,7 @@ export default function ImageUploadForm({ onResult }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
+  const [mode, setMode] = useState<"upload" | "camera">("upload");
   const inputRef = useRef<HTMLInputElement>(null);
   const previewUrlRef = useRef<string | null>(null);
 
@@ -110,47 +112,78 @@ export default function ImageUploadForm({ onResult }: Props) {
   return (
     <div className="space-y-3">
       <span className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-        Upload Food Image
+        Add Food Image
       </span>
 
-      <div
-        onDragOver={(e) => {
-          e.preventDefault();
-          setDragging(true);
-        }}
-        onDragLeave={() => setDragging(false)}
-        onDrop={handleDrop}
-        onClick={() => inputRef.current?.click()}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") inputRef.current?.click();
-        }}
-        className={`flex cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed px-4 py-6 text-center transition ${
-          dragging
-            ? "border-brand-500 bg-brand-50 dark:bg-brand-500/10"
-            : "border-slate-300 hover:border-brand-400 hover:bg-slate-50 dark:border-slate-700 dark:hover:border-brand-500 dark:hover:bg-slate-800"
-        }`}
-      >
-        <span className="text-sm font-medium text-brand-700 dark:text-brand-500">
-          Click to choose a file
-        </span>
-        <span className="text-xs text-slate-500 dark:text-slate-400">
-          or drag &amp; drop, or paste with{" "}
-          <kbd className="rounded border border-slate-300 bg-white px-1 font-sans dark:border-slate-600 dark:bg-slate-700">
-            ⌘/Ctrl + V
-          </kbd>
-        </span>
-        <span className="text-xs text-slate-400">JPG, PNG, WEBP · max 10 MB</span>
+      <div className="grid grid-cols-2 gap-1 rounded-lg bg-slate-100 p-1 dark:bg-slate-800">
+        <button
+          type="button"
+          onClick={() => setMode("upload")}
+          className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
+            mode === "upload"
+              ? "bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white"
+              : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
+          }`}
+        >
+          Upload
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode("camera")}
+          className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
+            mode === "camera"
+              ? "bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white"
+              : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200"
+          }`}
+        >
+          Camera
+        </button>
       </div>
 
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/jpeg,image/jpg,image/png,image/webp"
-        onChange={(e) => acceptFile(e.target.files?.[0] ?? null)}
-        className="hidden"
-      />
+      {mode === "upload" ? (
+        <>
+          <div
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragging(true);
+            }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={handleDrop}
+            onClick={() => inputRef.current?.click()}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") inputRef.current?.click();
+            }}
+            className={`flex cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed px-4 py-6 text-center transition ${
+              dragging
+                ? "border-brand-500 bg-brand-50 dark:bg-brand-500/10"
+                : "border-slate-300 hover:border-brand-400 hover:bg-slate-50 dark:border-slate-700 dark:hover:border-brand-500 dark:hover:bg-slate-800"
+            }`}
+          >
+            <span className="text-sm font-medium text-brand-700 dark:text-brand-500">
+              Click to choose a file
+            </span>
+            <span className="text-xs text-slate-500 dark:text-slate-400">
+              or drag &amp; drop, or paste with{" "}
+              <kbd className="rounded border border-slate-300 bg-white px-1 font-sans dark:border-slate-600 dark:bg-slate-700">
+                ⌘/Ctrl + V
+              </kbd>
+            </span>
+            <span className="text-xs text-slate-400">JPG, PNG, WEBP · max 10 MB</span>
+          </div>
+
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/jpeg,image/jpg,image/png,image/webp"
+            onChange={(e) => acceptFile(e.target.files?.[0] ?? null)}
+            className="hidden"
+          />
+        </>
+      ) : (
+        <CameraCapture onCapture={acceptFile} />
+      )}
 
       {previewUrl && (
         // eslint-disable-next-line @next/next/no-img-element

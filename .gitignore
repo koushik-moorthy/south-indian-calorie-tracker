@@ -27,3 +27,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .vercel
+
+# local tooling artifacts
+.playwright-mcp/
+ct-home.png
