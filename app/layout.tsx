@@ -6,11 +6,18 @@ export const metadata: Metadata = {
   title: "South Indian Calorie Tracker",
   description:
     "Quickly estimate calories from South Indian foods using text or a photo.",
+  applicationName: "Calories",
+  appleWebApp: {
+    capable: true,
+    title: "Calories",
+    statusBarStyle: "default",
+  },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  themeColor: "#f97316",
 };
 
 // Applies the saved theme (or system preference) before paint to avoid a flash.

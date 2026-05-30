@@ -25,6 +25,11 @@ isolated by row-level security.
   and is **never returned to the browser** — Settings shows a "Key saved" status,
   not the key.
 - **Model name** is saved per user (RLS-protected) alongside the key.
+- **Hardening.** Uploaded images are validated by their actual magic bytes (not a
+  client-supplied Content-Type) before being sent to OpenAI. Baseline security
+  headers are applied to every response (`X-Frame-Options`, `X-Content-Type-Options`,
+  `Referrer-Policy`, `Permissions-Policy` — camera allowed for capture, mic/geo
+  denied — and HSTS).
 
 > New accounts are auto-confirmed via a database trigger so email/password works
 > without configuring SMTP. To require real email verification, remove the
@@ -34,10 +39,18 @@ isolated by row-level security.
 ## Features
 
 - Text input → food name, serving size, calories, confidence, notes
-- Image upload (JPG / PNG / WEBP, max 10 MB) with preview → vision-based estimate
-- Add results to a daily log, remove items, clear all
-- Set a daily calorie goal and see remaining (or over) count down as you log food
+- Food photo → vision-based estimate, via **image upload** or **live in-app camera
+  capture** (JPG / PNG / WEBP, max 10 MB, with preview)
+- **Adjustable servings** on a result — scale calories and the full nutrition
+  breakdown up or down before adding it to the log
+- Add results to a daily log and remove items
+- **Day-by-day history** — browse previous days with per-day calorie totals and
+  nutrition; clear an individual day
+- **Export** your full log as **CSV** or **JSON**
+- Set a daily calorie goal and see today's remaining (or over) count down as you log
 - Automatic total calories, persisted across refreshes
+- **Installable PWA** — add to a phone home screen for a standalone, full-screen
+  app with its own icon
 - Mobile responsive, clean UI, friendly error handling
 
 ## Project Structure
@@ -156,6 +169,16 @@ npm run dev
 ```
 
 Open <http://localhost:3000>.
+
+## Testing
+
+Pure logic (date grouping, serving scaling, CSV/JSON export, image-type sniffing)
+is unit-tested with [Vitest](https://vitest.dev):
+
+```bash
+npm test         # run once
+npm run test:watch
+```
 
 ## 4. Deploy to Vercel
 
