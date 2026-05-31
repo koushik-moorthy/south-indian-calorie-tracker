@@ -25,7 +25,7 @@ export default function PlanPanel({
   onAddWeight,
   onRemoveWeight,
 }: Props) {
-  const [open, setOpen] = useState(!plan);
+  const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);

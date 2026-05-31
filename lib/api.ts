@@ -1,12 +1,14 @@
 "use client";
 
 import { getAccessToken } from "./supabaseBrowser";
-import type { AnalysisResult, ApiError, LogEntry, WeightEntry } from "./types";
+import type { AnalysisResult, ApiError, LogEntry, Nutrition, WeightEntry } from "./types";
 import type { UserSettings } from "./settings";
 import type { PlanProfile, PlanResult, StoredPlan } from "./plan";
 import type { InsightsInput, InsightsResult } from "./insights";
 import type { SuggestionInput, SuggestionsResult } from "./suggest";
 import type { FastingState } from "./fasting";
+import type { PerformanceInput, PerformanceResult } from "./performance";
+import type { AskResult } from "./ask";
 
 async function authHeaders(json = false): Promise<Record<string, string>> {
   const token = await getAccessToken();
@@ -37,9 +39,10 @@ export async function analyzeText(food: string): Promise<AnalysisResult> {
   return (await res.json()) as AnalysisResult;
 }
 
-export async function analyzeImage(file: File): Promise<AnalysisResult> {
+export async function analyzeImage(file: File, note?: string): Promise<AnalysisResult> {
   const form = new FormData();
   form.append("image", file);
+  if (note && note.trim()) form.append("note", note.trim());
   const res = await fetch("/api/analyze-image", {
     method: "POST",
     headers: await authHeaders(),
@@ -82,6 +85,20 @@ export async function addManualEntry(
     body: JSON.stringify({ foodName, calories }),
   });
   if (!res.ok) throw await asError(res, "Could not add to your log.");
+  return (await res.json()) as LogEntry;
+}
+
+/** Update a logged entry's name, calories, and/or macros. */
+export async function updateLogEntry(
+  id: string,
+  patch: { foodName?: string; calories?: number; nutrition?: Nutrition | null }
+): Promise<LogEntry> {
+  const res = await fetch("/api/log", {
+    method: "PATCH",
+    headers: await authHeaders(true),
+    body: JSON.stringify({ id, ...patch }),
+  });
+  if (!res.ok) throw await asError(res, "Could not update the item.");
   return (await res.json()) as LogEntry;
 }
 
@@ -185,4 +202,31 @@ export async function getSuggestions(
   });
   if (!res.ok) throw await asError(res, "Could not get suggestions.");
   return (await res.json()) as SuggestionsResult;
+}
+
+export async function askCoach(
+  question: string,
+  context: SuggestionInput
+): Promise<AskResult> {
+  const res = await fetch("/api/ask", {
+    method: "POST",
+    headers: await authHeaders(true),
+    body: JSON.stringify({ question, context }),
+  });
+  if (!res.ok) throw await asError(res, "Could not answer your question.");
+  return (await res.json()) as AskResult;
+}
+
+// ---- Performance review ----
+
+export async function getPerformance(
+  input: PerformanceInput
+): Promise<PerformanceResult> {
+  const res = await fetch("/api/performance", {
+    method: "POST",
+    headers: await authHeaders(true),
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) throw await asError(res, "Could not generate your review.");
+  return (await res.json()) as PerformanceResult;
 }

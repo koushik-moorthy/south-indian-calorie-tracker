@@ -87,6 +87,53 @@ export async function POST(request: Request) {
   }
 }
 
+// Update an existing entry's name, calories, and/or macros.
+export async function PATCH(request: Request) {
+  const auth = await getUserClient(request);
+  if (!auth) return NextResponse.json({ error: "Not signed in." }, { status: 401 });
+
+  let body: { id?: string; foodName?: string; calories?: number; nutrition?: Nutrition | null };
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+  }
+
+  const id = String(body.id ?? "");
+  if (!id) return NextResponse.json({ error: "Missing entry id." }, { status: 400 });
+
+  const update: Record<string, unknown> = {};
+  if (body.foodName !== undefined) {
+    const name = String(body.foodName).trim();
+    if (!name) return NextResponse.json({ error: "Food name can't be empty." }, { status: 400 });
+    update.food_name = name;
+  }
+  if (body.calories !== undefined) {
+    update.calories = Math.max(0, Math.round(Number(body.calories) || 0));
+  }
+  if (body.nutrition !== undefined) {
+    update.nutrition = body.nutrition; // object or null
+  }
+  if (Object.keys(update).length === 0) {
+    return NextResponse.json({ error: "Nothing to update." }, { status: 400 });
+  }
+
+  try {
+    const { data, error } = await auth.supabase
+      .from(LOG_TABLE)
+      .update(update)
+      .eq("user_id", auth.user.id)
+      .eq("id", id)
+      .select("id, food_name, calories, nutrition, created_at")
+      .single();
+    if (error) throw error;
+    return NextResponse.json(rowToEntry(data as LogRow));
+  } catch (err) {
+    console.error("log PATCH error:", err);
+    return NextResponse.json({ error: DB_ERROR }, { status: 502 });
+  }
+}
+
 // Delete one entry (?id=...) or clear all of the user's entries.
 export async function DELETE(request: Request) {
   const auth = await getUserClient(request);

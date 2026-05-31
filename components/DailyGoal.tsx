@@ -59,7 +59,7 @@ export default function DailyGoal({ goal, consumed, onSave }: Props) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="e.g. 2000"
-            autoFocus
+            autoFocus={editing}
             className="w-32 rounded-lg border border-slate-300 px-3 py-2 text-base outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:focus:ring-brand-500/30"
           />
           <span className="text-sm text-slate-500 dark:text-slate-400">kcal / day</span>
