@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { LogEntry } from "@/lib/types";
+import type { LogEntry, Nutrition } from "@/lib/types";
 import { totalCalories } from "@/lib/api";
 import { sumNutrition } from "@/lib/nutrition";
 import {
@@ -12,12 +12,18 @@ import {
 } from "@/lib/dates";
 import NutritionBreakdown from "./NutritionBreakdown";
 import ExportButtons from "./ExportButtons";
+import LogEntryEditor from "./LogEntryEditor";
 
 interface Props {
   /** All of the user's entries, across every day. */
   entries: LogEntry[];
   loading?: boolean;
   onRemove: (id: string) => void;
+  /** Update a logged entry's name/calories/macros. */
+  onUpdate: (
+    id: string,
+    patch: { foodName: string; calories: number; nutrition: Nutrition }
+  ) => Promise<void>;
   /** Clear all entries on the given day key ("YYYY-MM-DD"). */
   onClearDay: (dayKey: string) => void;
 }
@@ -26,9 +32,11 @@ export default function DailyLog({
   entries,
   loading = false,
   onRemove,
+  onUpdate,
   onClearDay,
 }: Props) {
   const [selectedDay, setSelectedDay] = useState(() => todayKey());
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const today = todayKey();
   const isToday = selectedDay === today;
@@ -114,29 +122,51 @@ export default function DailyLog({
                   </tr>
                 </thead>
                 <tbody>
-                  {dayEntries.map((entry) => (
-                    <tr
-                      key={entry.id}
-                      className="border-b border-slate-100 dark:border-slate-800"
-                    >
-                      <td className="py-2.5 text-slate-800 dark:text-slate-200">
-                        {entry.foodName}
-                      </td>
-                      <td className="py-2.5 text-right font-medium text-slate-900 dark:text-slate-100">
-                        {entry.calories.toLocaleString()}
-                      </td>
-                      <td className="py-2.5 text-right">
-                        <button
-                          type="button"
-                          onClick={() => onRemove(entry.id)}
-                          aria-label={`Remove ${entry.foodName}`}
-                          className="text-slate-400 transition hover:text-red-600 dark:hover:text-red-400"
-                        >
-                          ✕
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {dayEntries.map((entry) =>
+                    editingId === entry.id ? (
+                      <tr key={entry.id}>
+                        <td colSpan={3} className="py-2">
+                          <LogEntryEditor
+                            entry={entry}
+                            onSave={(patch) => onUpdate(entry.id, patch)}
+                            onClose={() => setEditingId(null)}
+                          />
+                        </td>
+                      </tr>
+                    ) : (
+                      <tr
+                        key={entry.id}
+                        className="border-b border-slate-100 dark:border-slate-800"
+                      >
+                        <td className="py-2.5 text-slate-800 dark:text-slate-200">
+                          {entry.foodName}
+                        </td>
+                        <td className="py-2.5 text-right font-medium text-slate-900 dark:text-slate-100">
+                          {entry.calories.toLocaleString()}
+                        </td>
+                        <td className="py-2.5 text-right">
+                          <div className="flex items-center justify-end gap-2.5">
+                            <button
+                              type="button"
+                              onClick={() => setEditingId(entry.id)}
+                              aria-label={`Edit ${entry.foodName}`}
+                              className="text-slate-400 transition hover:text-brand-600 dark:hover:text-brand-500"
+                            >
+                              ✎
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => onRemove(entry.id)}
+                              aria-label={`Remove ${entry.foodName}`}
+                              className="text-slate-400 transition hover:text-red-600 dark:hover:text-red-400"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  )}
                 </tbody>
               </table>
 

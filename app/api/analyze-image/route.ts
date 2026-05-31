@@ -16,10 +16,12 @@ export async function POST(request: Request) {
   }
 
   let file: File | null = null;
+  let note = "";
   try {
     const form = await request.formData();
     const value = form.get("image");
     if (value instanceof File) file = value;
+    note = String(form.get("note") ?? "").trim().slice(0, 300);
   } catch {
     return NextResponse.json({ error: "Invalid upload." }, { status: 400 });
   }
@@ -66,7 +68,12 @@ export async function POST(request: Request) {
       {
         role: "user",
         content: [
-          { type: "text", text: "Analyze this food image." },
+          {
+            type: "text",
+            text: note
+              ? `Analyze this food image. The user adds this context: "${note}". Use it to refine your estimate, but rely on what you actually see.`
+              : "Analyze this food image.",
+          },
           { type: "image_url", image_url: { url: dataUrl } },
         ],
       },

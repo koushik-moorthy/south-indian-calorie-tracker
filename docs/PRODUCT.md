@@ -36,7 +36,8 @@ searching long food databases or weighing everything.
 ### 📸 Log food by photo or text
 - **Take a photo** of your plate with your phone's camera, right inside the app, or
   **upload an existing picture**. FoodCal looks at the image and estimates what's on
-  the plate and how many calories it has.
+  the plate and how many calories it has. You can add an **optional note** ("homemade,
+  extra ghee", "half plate") to help it estimate more accurately.
 - Prefer typing? Just write something like **"2 idlis"** or **"1 masala dosa"** and get
   an instant estimate.
 - Already know the numbers? **Add an item manually** — just type the food name and its
@@ -72,7 +73,8 @@ Your daily calorie target shows up as a **countdown** — see how many calories 
 have left for the day (or how far over you've gone) with a progress bar.
 
 ### 📅 Daily log & history
-- Add foods to your **daily log** and remove anything you logged by mistake.
+- Add foods to your **daily log**, **edit** any entry later (name, calories, and
+  macros), or remove anything you logged by mistake.
 - **Browse previous days** to see what you ate and your totals for each day.
 
 ### ⏱️ Fasting window & timer
@@ -89,6 +91,18 @@ snacks, or drinks to help you hit your remaining calories and macros — priorit
 what you're short on (like protein or fiber). If you're near or over your limit, it
 suggests lighter, filling options (rasam, buttermilk, sundal, and the like). On a
 fresh day it offers a balanced spread for the whole day.
+
+### 💬 Ask the coach
+Type any question — *"How do I hit my remaining carbs today?"*, *"What can I make with
+eggs and rice?"*, *"Is a dosa okay for dinner?"* — and FoodCal answers using your
+**current calorie and macro budget**, leaning on Tamil / South Indian options and any
+ingredients you mention.
+
+### 📊 "How am I doing?" performance review
+Tap **Get insights** any time for a full, honest progress review that pulls together
+**everything** — your weight trend versus the plan, calorie and macro adherence over
+the week and month, fasting consistency, BMI, and whether you're on pace to hit your
+goal by your target date — plus one concrete thing to focus on next.
 
 ### 🤖 "End the day" insights
 Tap **End my day** and FoodCal gives you a short, encouraging coach's note covering:

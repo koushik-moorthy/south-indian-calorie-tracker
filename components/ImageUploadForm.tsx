@@ -4,21 +4,25 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { AnalysisResult } from "@/lib/types";
 import { analyzeImage } from "@/lib/api";
 import CameraCapture from "@/components/CameraCapture";
+import ResultCard from "@/components/ResultCard";
 
 interface Props {
-  onResult: (result: AnalysisResult) => void;
+  onAddToLog: (result: AnalysisResult) => Promise<void>;
 }
 
 const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 const MAX_BYTES = 10 * 1024 * 1024; // 10 MB
 
-export default function ImageUploadForm({ onResult }: Props) {
+export default function ImageUploadForm({ onAddToLog }: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
   const [mode, setMode] = useState<"upload" | "camera">("upload");
+  const [note, setNote] = useState("");
+  const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [adding, setAdding] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const previewUrlRef = useRef<string | null>(null);
 
@@ -101,11 +105,27 @@ export default function ImageUploadForm({ onResult }: Props) {
 
     setLoading(true);
     try {
-      onResult(await analyzeImage(file));
+      setResult(await analyzeImage(file, note));
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleAdd(scaled: AnalysisResult) {
+    setError(null);
+    setAdding(true);
+    try {
+      await onAddToLog(scaled);
+      // Reset for the next item.
+      setResult(null);
+      setNote("");
+      acceptFile(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not add to your log.");
+    } finally {
+      setAdding(false);
     }
   }
 
@@ -194,6 +214,16 @@ export default function ImageUploadForm({ onResult }: Props) {
         />
       )}
 
+      <input
+        type="text"
+        value={note}
+        onChange={(e) => setNote(e.target.value)}
+        placeholder="What's in the photo? (optional, e.g. homemade, extra ghee)"
+        autoComplete="off"
+        maxLength={300}
+        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:ring-brand-500/30"
+      />
+
       <button
         type="button"
         onClick={handleAnalyze}
@@ -204,6 +234,8 @@ export default function ImageUploadForm({ onResult }: Props) {
       </button>
 
       {error && <p className="text-sm text-red-600">{error}</p>}
+
+      {result && <ResultCard result={result} onAdd={handleAdd} saving={adding} />}
     </div>
   );
 }
