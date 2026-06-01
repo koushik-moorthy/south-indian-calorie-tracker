@@ -193,3 +193,31 @@ For a portfolio/hiring lens this repo is a **net positive and a strong sample of
 **Bottom line (unoptimistic):** technically this is a above-average solo full-stack project with unusually good docs and clean secret hygiene. As an *open-source project* it is currently a personal app with privacy leaks, no license, and no community scaffolding. It can become genuinely publishable in an afternoon, and a credible (still niche) OSS project in a few focused days — but it would not, today, read as a "serious OSS project" to an experienced reviewer.
 
 _Companion: see [`docs/open-source-fixes.md`](open-source-fixes.md) for the subset of these fixes Claude can implement automatically._
+
+---
+
+## Post-remediation re-score (2026-06-01)
+
+After the remediation pass (the "Harden security" and "Prepare for open source"
+commits, plus a git-history rewrite to purge the PII), the scores are:
+
+| Area | Before | After | Notes |
+| --- | --- | --- | --- |
+| Public Repo Readiness | 6/10 | **9/10** | PII removed from the tree **and purged from git history** (screenshots + email string); MIT `LICENSE` added; secret history still clean. Residual: the commit-author email (personal Gmail) is intentionally left in author metadata to preserve GitHub attribution. |
+| Security | 7/10 | **8.5/10** | Added a production CSP, best-effort per-user rate limiting on AI routes, generic error responses (no upstream leakage), removed the unused server-key fallback, and added `SECURITY.md`. Residual (minor): the rate limiter is per-instance until backed by a shared store; CSP uses `script-src 'unsafe-inline'`; multi-user auto-confirm remains opt-out. |
+| OSS Readiness | 4/10 | **9/10** | Added `LICENSE`, `CONTRIBUTING`, `CODE_OF_CONDUCT`, `SECURITY`, `CHANGELOG`, issue/PR templates, CI, Dependabot, Prettier + `.editorconfig`/`.nvmrc`/`engines`, and a versioned schema migration. Residual: ESLint not yet configured (Prettier + strict `tsc` only); route/component tests still limited. |
+| Codex for OSS — Application Strength | 3/10 | **~5/10 (Weak→Moderate)** | Improved everything *controllable* (license, CI, governance, active commit/issue history, repo topics). **Cannot reach >8 from repo edits** — the binding constraints are external: single author, weeks-old project, no external contributors/stars/users, and a demo locked to the owner. Those require real-world adoption over time. |
+
+**Honest bottom line:** Public Readiness, Security, and OSS Readiness are now
+above 8. **Codex "Application Strength" cannot honestly be rated above 8 yet** —
+it is gated by traction/community signals that cannot be manufactured by editing
+the repo. The repository is now genuinely publishable and reads as a serious
+independent project.
+
+### Still requires a human step (out of scope for automated fixes)
+- **Unlock the public demo** (disable single-user mode on the deploy, or add a
+  seeded demo account) so reviewers can actually try it.
+- **Production rate-limit store** (Upstash / Vercel KV) for global limits.
+- **Enable GitHub "Private vulnerability reporting"** (Settings → Security) to
+  back `SECURITY.md`.
+- **Re-capture screenshots/demos with dummy data** (needs an app login).
