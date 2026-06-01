@@ -1,5 +1,8 @@
 # FoodCal
 
+[![CI](https://github.com/koushik-moorthy/south-indian-calorie-tracker/actions/workflows/ci.yml/badge.svg)](https://github.com/koushik-moorthy/south-indian-calorie-tracker/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A lightweight web app to quickly estimate calories from South Indian foods using
 either a **text description** ("2 idlis", "1 masala dosa") or a **food photo**.
 Users sign in with email + password (**Supabase Auth**); each account stores its
@@ -26,94 +29,14 @@ isolated by row-level security.
   app with its own icon
 - Mobile responsive, clean UI, friendly error handling
 
-## Screenshots
+## Screenshots & demos
 
-A visual tour of FoodCal. Full set, viewports, and capture notes live in
-[`docs/screenshots-index.md`](docs/screenshots-index.md).
+Screenshots and short demo GIFs are produced from the capture and recording
+guides in [`docs/screenshots-plan.md`](docs/screenshots-plan.md) and
+[`docs/demos/`](docs/demos/README.md). Earlier captures were removed because they
+contained personal data; they will be regenerated with demo-only data.
 
-### Gallery
-
-<table>
-  <tr>
-    <td align="center"><a href="docs/screenshots/desktop/plan-overview.png"><img src="docs/screenshots/desktop/plan-overview.png" width="260" alt="Personalized plan & progress"></a></td>
-    <td align="center"><a href="docs/screenshots/desktop/calorie-log.png"><img src="docs/screenshots/desktop/calorie-log.png" width="260" alt="Daily calorie log"></a></td>
-    <td align="center"><a href="docs/screenshots/desktop/meal-photo-upload.png"><img src="docs/screenshots/desktop/meal-photo-upload.png" width="260" alt="Estimate calories from a photo"></a></td>
-  </tr>
-  <tr>
-    <td align="center"><a href="docs/screenshots/desktop/fasting-timer.png"><img src="docs/screenshots/desktop/fasting-timer.png" width="260" alt="Fasting window & timer"></a></td>
-    <td align="center"><a href="docs/screenshots/desktop/ai-suggestions.png"><img src="docs/screenshots/desktop/ai-suggestions.png" width="260" alt="AI food suggestions"></a></td>
-    <td align="center"><a href="docs/screenshots/desktop/weight-progress-chart.png"><img src="docs/screenshots/desktop/weight-progress-chart.png" width="260" alt="Weight progress chart"></a></td>
-  </tr>
-</table>
-
-### Feature screenshots
-
-Desktop views — click any thumbnail for the full image.
-
-| Feature | Preview | What it shows |
-| --- | --- | --- |
-| **Sign in** | <a href="docs/screenshots/desktop/onboarding-signin.png"><img src="docs/screenshots/desktop/onboarding-signin.png" width="200" alt="Sign-in screen"></a> | Email + password sign-in (single-user "private deployment" notice). |
-| **Settings (BYOK)** | <a href="docs/screenshots/desktop/settings-popover.png"><img src="docs/screenshots/desktop/settings-popover.png" width="200" alt="Settings popover"></a> | Encrypted OpenAI key + model picker; the key is never returned to the browser. |
-| **Your plan** | <a href="docs/screenshots/desktop/plan-overview.png"><img src="docs/screenshots/desktop/plan-overview.png" width="200" alt="Plan summary"></a> | Daily target, maintenance/deficit, BMI now & at goal, macro targets. |
-| **Weight progress** | <a href="docs/screenshots/desktop/weight-progress-chart.png"><img src="docs/screenshots/desktop/weight-progress-chart.png" width="200" alt="Progress chart"></a> | Projected path vs. actual check-ins with a "today" marker. |
-| **Weight check-in** | <a href="docs/screenshots/desktop/weight-checkin.png"><img src="docs/screenshots/desktop/weight-checkin.png" width="200" alt="Weight check-in"></a> | Log today's weight; recent history with quick removal. |
-| **Log by text** | <a href="docs/screenshots/desktop/calorie-text-input.png"><img src="docs/screenshots/desktop/calorie-text-input.png" width="200" alt="Text input"></a> | Type "2 idlis, 1 masala dosa" for an instant estimate. |
-| **Add manually** | <a href="docs/screenshots/desktop/calorie-manual-entry.png"><img src="docs/screenshots/desktop/calorie-manual-entry.png" width="200" alt="Manual entry"></a> | Enter a name + calories directly, no AI call. |
-| **Daily goal** | <a href="docs/screenshots/desktop/calorie-daily-goal.png"><img src="docs/screenshots/desktop/calorie-daily-goal.png" width="200" alt="Daily goal"></a> | Remaining (or over) countdown with a progress bar. |
-| **Calorie log** | <a href="docs/screenshots/desktop/calorie-log.png"><img src="docs/screenshots/desktop/calorie-log.png" width="200" alt="Calorie log"></a> | Day navigator, totals, macro breakdown, CSV/JSON export. |
-| **Photo upload** | <a href="docs/screenshots/desktop/meal-photo-upload.png"><img src="docs/screenshots/desktop/meal-photo-upload.png" width="200" alt="Photo upload"></a> | Drag, drop, or paste a food photo to estimate calories. |
-| **Live camera** | <a href="docs/screenshots/desktop/meal-photo-camera.png"><img src="docs/screenshots/desktop/meal-photo-camera.png" width="200" alt="Camera capture"></a> | Snap a plate in-app (shutter + flip camera). |
-| **Fasting** | <a href="docs/screenshots/desktop/fasting-timer.png"><img src="docs/screenshots/desktop/fasting-timer.png" width="200" alt="Fasting timer"></a> | Pick a window (16:8, OMAD…); live timer + progress bar. |
-| **Food suggestions** | <a href="docs/screenshots/desktop/ai-suggestions.png"><img src="docs/screenshots/desktop/ai-suggestions.png" width="200" alt="Food suggestions"></a> | "What should I eat?" tuned to your remaining budget. |
-| **Ask the coach** | <a href="docs/screenshots/desktop/ai-coach.png"><img src="docs/screenshots/desktop/ai-coach.png" width="200" alt="Ask the coach"></a> | Free-form Q&A grounded in today's calories & macros. |
-| **Performance review** | <a href="docs/screenshots/desktop/analytics-performance.png"><img src="docs/screenshots/desktop/analytics-performance.png" width="200" alt="Performance review"></a> | "How am I doing?" — weight, calorie, macro & fasting read. |
-| **End the day** | <a href="docs/screenshots/desktop/analytics-endday.png"><img src="docs/screenshots/desktop/analytics-endday.png" width="200" alt="End the day"></a> | Encouraging today / week / month / goal summary. |
-
-### Mobile
-
-FoodCal is mobile-first. iPhone-sized captures:
-
-<table>
-  <tr>
-    <td align="center"><img src="docs/screenshots/mobile/onboarding-signin.png" width="150" alt="Sign in (mobile)"><br><sub>Sign in</sub></td>
-    <td align="center"><img src="docs/screenshots/mobile/plan-overview.png" width="150" alt="Plan (mobile)"><br><sub>Your plan</sub></td>
-    <td align="center"><img src="docs/screenshots/mobile/calorie-log.png" width="150" alt="Log (mobile)"><br><sub>Calorie log</sub></td>
-    <td align="center"><img src="docs/screenshots/mobile/meal-photo-upload.png" width="150" alt="Photo (mobile)"><br><sub>Photo upload</sub></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="docs/screenshots/mobile/meal-photo-camera.png" width="150" alt="Camera (mobile)"><br><sub>Live camera</sub></td>
-    <td align="center"><img src="docs/screenshots/mobile/fasting-timer.png" width="150" alt="Fasting (mobile)"><br><sub>Fasting</sub></td>
-    <td align="center"><img src="docs/screenshots/mobile/calorie-daily-goal.png" width="150" alt="Daily goal (mobile)"><br><sub>Daily goal</sub></td>
-    <td align="center"><img src="docs/screenshots/mobile/ai-suggestions.png" width="150" alt="Suggestions (mobile)"><br><sub>Suggestions</sub></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="docs/screenshots/mobile/ai-coach.png" width="150" alt="Ask coach (mobile)"><br><sub>Ask the coach</sub></td>
-    <td align="center"><img src="docs/screenshots/mobile/analytics-performance.png" width="150" alt="Review (mobile)"><br><sub>Review</sub></td>
-    <td align="center"><img src="docs/screenshots/mobile/analytics-endday.png" width="150" alt="End day (mobile)"><br><sub>End the day</sub></td>
-    <td align="center"><img src="docs/screenshots/mobile/full-app.png" width="150" alt="Full app (mobile)"><br><sub>Full app</sub></td>
-  </tr>
-</table>
-
-## Demos
-
-Short screen recordings of the core flows. They're produced with the guide in
-[`docs/demos/`](docs/demos/README.md) (record → `docs/demos/make-gifs.sh`) and
-render here once generated.
-
-<table>
-  <tr>
-    <td align="center"><img src="docs/demos/onboarding.gif" width="280" alt="Onboarding demo"><br><sub><b>Onboarding</b></sub></td>
-    <td align="center"><img src="docs/demos/log-food-text.gif" width="280" alt="Logging food by text"><br><sub><b>Log food by text</b></sub></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="docs/demos/log-food-image.gif" width="280" alt="Logging food by image"><br><sub><b>Log food by image</b></sub></td>
-    <td align="center"><img src="docs/demos/fasting-flow.gif" width="280" alt="Fasting flow"><br><sub><b>Fasting flow</b></sub></td>
-  </tr>
-  <tr>
-    <td align="center"><img src="docs/demos/weight-checkin.gif" width="280" alt="Weight check-in"><br><sub><b>Weight check-in</b></sub></td>
-    <td align="center"><img src="docs/demos/ai-coach.gif" width="280" alt="AI coach"><br><sub><b>AI coach</b></sub></td>
-  </tr>
-</table>
+▶ Try the live app: <https://foodcal.vercel.app>
 
 ---
 
@@ -241,9 +164,11 @@ All routes require authentication; AI routes also require the user's saved key.
 │   └── *.test.ts                  # Vitest unit tests for the pure logic
 ├── docs/
 │   ├── architecture.md            # System design + Mermaid diagrams
+│   ├── roadmap.md                 # Release plan (v1.1 / v1.2 / v2.0)
 │   ├── PRODUCT.md                 # Product overview
-│   ├── screenshots-index.md, screenshots/   # Captured screenshots (desktop/ + mobile/)
+│   ├── screenshots-plan.md        # Screenshot capture plan
 │   └── demos/                     # Demo recording guide + GIF pipeline
+├── supabase/migrations/           # Versioned database schema (baseline)
 ├── next.config.mjs                # Baseline security headers
 ├── tailwind.config.ts, postcss.config.js, tsconfig.json, vitest.config.ts
 ├── .env.local.example
@@ -271,56 +196,18 @@ cp .env.local.example .env.local   # then fill in the values (see below)
 
 ### Database
 
-In the Supabase **SQL editor**, apply the schema (Auth is enabled by default on
-every project):
+Apply the baseline schema — tables, row-level security policies, indexes, and the
+auto-confirm trigger — from
+[`supabase/migrations/0001_initial_schema.sql`](supabase/migrations/0001_initial_schema.sql)
+in the Supabase **SQL editor** (Auth is enabled by default on every project), or
+with the Supabase CLI:
 
-```sql
--- Per-user settings: encrypted OpenAI key + chosen model.
-create table public.user_settings (
-  user_id uuid primary key references auth.users (id) on delete cascade,
-  openai_key_cipher text,
-  model text not null default 'gpt-4o-mini',
-  daily_calorie_goal integer,
-  updated_at timestamptz not null default now()
-);
-alter table public.user_settings enable row level security;
-create policy "own settings - select" on public.user_settings for select to authenticated using (auth.uid() = user_id);
-create policy "own settings - insert" on public.user_settings for insert to authenticated with check (auth.uid() = user_id);
-create policy "own settings - update" on public.user_settings for update to authenticated using (auth.uid() = user_id) with check (auth.uid() = user_id);
-
--- Daily log, scoped to the authenticated user.
-create table public.log_entries (
-  id uuid primary key default gen_random_uuid(),
-  user_id uuid not null references auth.users (id) on delete cascade,
-  food_name text not null,
-  calories integer not null default 0,
-  nutrition jsonb,
-  created_at timestamptz not null default now()
-);
-create index log_entries_user_created_idx on public.log_entries (user_id, created_at desc);
-alter table public.log_entries enable row level security;
-create policy "own log - select" on public.log_entries for select to authenticated using (auth.uid() = user_id);
-create policy "own log - insert" on public.log_entries for insert to authenticated with check (auth.uid() = user_id);
-create policy "own log - delete" on public.log_entries for delete to authenticated using (auth.uid() = user_id);
-
--- Auto-confirm new accounts (so email/password works without SMTP).
--- Remove this and enable "Confirm email" once you wire up email delivery.
-create or replace function public.auto_confirm_email()
-returns trigger language plpgsql security definer set search_path = '' as $$
-begin
-  if new.email_confirmed_at is null then new.email_confirmed_at := now(); end if;
-  return new;
-end; $$;
-revoke execute on function public.auto_confirm_email() from public, anon, authenticated;
-create trigger auto_confirm_email_trigger before insert on auth.users
-  for each row execute function public.auto_confirm_email();
+```bash
+supabase db push
 ```
 
-> The repo does not include a `supabase/migrations/` directory — the schema above
-> is the source of truth. Newer deployments also add `weight_entries`, plus
-> `plan` and `fasting` JSONB columns on `user_settings`; see
-> [`docs/architecture.md` §4](docs/architecture.md#4-database-schema-overview)
-> for the complete data model.
+This creates `user_settings`, `log_entries`, and `weight_entries`, all with
+row-level security scoped to `auth.uid() = user_id`.
 
 ### Run & test
 
@@ -344,12 +231,11 @@ values (which are safe to expose to the browser).
 | `SETTINGS_ENC_KEY` | ✅ | 32-byte, base64-encoded secret used to encrypt each user's OpenAI key (AES-256-GCM). Generate: `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`. |
 | `SINGLE_USER_MODE` | – | `true` locks the app to `ALLOWED_EMAIL`. Default `false` (multi-user). See [Single-user mode](#single-user-mode). |
 | `ALLOWED_EMAIL` | – (required if single-user) | Allowed email; a comma-separated allowlist is also accepted. |
-| `OPENAI_API_KEY` | – | Optional **server-side fallback** key. Supported in code ([`lib/openai.ts`](lib/openai.ts)) but the documented model is per-user BYOK, so it is normally unset. |
 | `OPENAI_MODEL` | – | Optional fallback model when a user hasn't chosen one. |
 
-There is **no required** `OPENAI_API_KEY` — each user enters their own key in the
-app's Settings after signing in (encrypted and stored server-side, never
-returned to the browser).
+The app is **strictly bring-your-own-key**: each user enters their own OpenAI
+key in Settings after signing in (encrypted and stored server-side, never
+returned to the browser). There is no server-side `OPENAI_API_KEY` fallback.
 
 ## Deployment
 
@@ -391,9 +277,12 @@ Baseline security headers (`X-Frame-Options`, `X-Content-Type-Options`,
 - **Upload hardening.** Uploaded images are validated by their actual magic bytes
   (not a client-supplied Content-Type) before being sent to OpenAI; JPG/PNG/WEBP
   only, 10 MB max. Images are not persisted.
-- **Headers.** Baseline security headers on every response (see
-  [`next.config.mjs`](next.config.mjs)); a strict CSP is intentionally omitted to
-  avoid breaking the inline theme-boot script and Supabase/OpenAI connections.
+- **Headers.** Baseline security headers on every response, plus a production
+  **Content-Security-Policy** (see [`next.config.mjs`](next.config.mjs)).
+- **Rate limiting.** AI endpoints are throttled per user (best-effort, in-memory;
+  a shared store is the production upgrade — see [SECURITY.md](SECURITY.md)).
+- **Error handling.** Routes return generic messages; details are logged
+  server-side, never sent to the client.
 
 > New accounts are auto-confirmed via a database trigger so email/password works
 > without configuring SMTP. To require real email verification, remove the
@@ -489,6 +378,14 @@ npm run test:watch
 
 Tests live next to the code as `lib/*.test.ts`. API routes and React components
 are not currently unit-tested.
+
+## Contributing & community
+
+Contributions are welcome! Start with [CONTRIBUTING.md](CONTRIBUTING.md) and the
+[Code of Conduct](CODE_OF_CONDUCT.md). Report security issues privately per the
+[Security Policy](SECURITY.md). Planned work lives in
+[docs/roadmap.md](docs/roadmap.md); notable changes in [CHANGELOG.md](CHANGELOG.md).
+Licensed under the [MIT License](LICENSE).
 
 ## Notes
 
