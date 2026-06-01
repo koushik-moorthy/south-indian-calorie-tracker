@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getUserClient } from "@/lib/supabase";
+import { rateLimit } from "@/lib/rateLimit";
 import { getUserOpenAI, NoApiKeyError } from "@/lib/userOpenAI";
 import { runJsonCompletion, IMAGE_SYSTEM_PROMPT, parseAnalysis } from "@/lib/openai";
 import { sniffImageMime } from "@/lib/imageType";
@@ -13,6 +14,14 @@ export async function POST(request: Request) {
   const auth = await getUserClient(request);
   if (!auth) {
     return NextResponse.json({ error: "Not signed in." }, { status: 401 });
+  }
+
+  const rl = rateLimit(`ai:${auth.user.id}`);
+  if (!rl.ok) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait a moment and try again." },
+      { status: 429, headers: { "Retry-After": String(rl.retryAfterSec) } }
+    );
   }
 
   let file: File | null = null;
@@ -84,8 +93,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: err.message }, { status: 400 });
     }
     console.error("analyze-image error:", err);
-    const message =
-      err instanceof Error ? err.message : "Something went wrong analyzing your image.";
+    // Do not leak upstream/internal error detail to the client (logged above).
+    const message = "Something went wrong analyzing your image.";
     return NextResponse.json({ error: message }, { status: 502 });
   }
 }

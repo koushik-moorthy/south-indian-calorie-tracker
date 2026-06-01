@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getUserClient } from "@/lib/supabase";
+import { rateLimit } from "@/lib/rateLimit";
 import { getUserOpenAI, NoApiKeyError } from "@/lib/userOpenAI";
 import { runJsonCompletion, PERFORMANCE_SYSTEM_PROMPT } from "@/lib/openai";
 import { parsePerformance, type PerformanceInput } from "@/lib/performance";
@@ -65,6 +66,14 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Not signed in." }, { status: 401 });
   }
 
+  const rl = rateLimit(`ai:${auth.user.id}`);
+  if (!rl.ok) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait a moment and try again." },
+      { status: 429, headers: { "Retry-After": String(rl.retryAfterSec) } }
+    );
+  }
+
   let input: PerformanceInput;
   try {
     input = (await request.json()) as PerformanceInput;
@@ -85,8 +94,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: err.message }, { status: 400 });
     }
     console.error("performance error:", err);
-    const message =
-      err instanceof Error ? err.message : "Something went wrong generating your review.";
+    // Do not leak upstream/internal error detail to the client (logged above).
+    const message = "Something went wrong generating your review.";
     return NextResponse.json({ error: message }, { status: 502 });
   }
 }

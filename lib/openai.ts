@@ -16,16 +16,14 @@ const NUTRITION_RULES = `- "nutrition" holds the macro breakdown (in grams) for 
 const DEFAULT_MODEL = "gpt-4o-mini";
 
 /**
- * Build an OpenAI client. A key supplied from the UI (per-request) takes
- * precedence; otherwise we fall back to the server-side OPENAI_API_KEY.
- * The key is only ever used here, on the server.
+ * Build an OpenAI client from the user's (decrypted, per-request) API key.
+ * There is no server-side key fallback: each user brings their own key, which
+ * is only ever used here, on the server.
  */
-export function getOpenAIClient(requestKey?: string): OpenAI {
-  const apiKey = (requestKey && requestKey.trim()) || process.env.OPENAI_API_KEY;
+export function getOpenAIClient(requestKey: string): OpenAI {
+  const apiKey = requestKey.trim();
   if (!apiKey) {
-    throw new Error(
-      "No OpenAI API key found. Add one in Settings, or set OPENAI_API_KEY in .env.local."
-    );
+    throw new Error("No OpenAI API key provided.");
   }
   return new OpenAI({ apiKey });
 }
