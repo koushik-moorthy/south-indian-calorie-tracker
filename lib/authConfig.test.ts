@@ -78,7 +78,7 @@ describe("isEmailAllowed", () => {
 
   it("matches the allowed email case-insensitively", () => {
     setEnv("true", "user@example.com");
-    expect(isEmailAllowed("KoushikDugk007@Gmail.com")).toBe(true);
+    expect(isEmailAllowed("User@Example.com")).toBe(true);
   });
 
   it("honors a comma-separated allowlist", () => {
