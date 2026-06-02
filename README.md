@@ -29,14 +29,78 @@ isolated by row-level security.
   app with its own icon
 - Mobile responsive, clean UI, friendly error handling
 
-## Screenshots & demos
+## Screenshots
 
-Screenshots and short demo GIFs are produced from the capture and recording
-guides in [`docs/screenshots-plan.md`](docs/screenshots-plan.md) and
-[`docs/demos/`](docs/demos/README.md). Earlier captures were removed because they
-contained personal data; they will be regenerated with demo-only data.
+A visual tour of FoodCal — captured with **demo data** (no real personal info).
+Try it live: <https://foodcal.vercel.app>.
 
-▶ Try the live app: <https://foodcal.vercel.app>
+### Gallery
+
+<table>
+  <tr>
+    <td align="center"><a href="docs/screenshots/desktop/plan-overview.png"><img src="docs/screenshots/desktop/plan-overview.png" width="260" alt="Personalized plan & progress"></a></td>
+    <td align="center"><a href="docs/screenshots/desktop/calorie-log.png"><img src="docs/screenshots/desktop/calorie-log.png" width="260" alt="Daily calorie log"></a></td>
+    <td align="center"><a href="docs/screenshots/desktop/meal-photo-upload.png"><img src="docs/screenshots/desktop/meal-photo-upload.png" width="260" alt="Estimate calories from a photo"></a></td>
+  </tr>
+  <tr>
+    <td align="center"><a href="docs/screenshots/desktop/fasting-timer.png"><img src="docs/screenshots/desktop/fasting-timer.png" width="260" alt="Fasting window & timer"></a></td>
+    <td align="center"><a href="docs/screenshots/desktop/ai-suggestions.png"><img src="docs/screenshots/desktop/ai-suggestions.png" width="260" alt="AI food suggestions"></a></td>
+    <td align="center"><a href="docs/screenshots/desktop/weight-progress-chart.png"><img src="docs/screenshots/desktop/weight-progress-chart.png" width="260" alt="Weight progress chart"></a></td>
+  </tr>
+</table>
+
+### Feature screenshots
+
+Desktop views — click any thumbnail for the full image.
+
+| Feature | Preview | What it shows |
+| --- | --- | --- |
+| **Sign in** | <a href="docs/screenshots/desktop/onboarding-signin.png"><img src="docs/screenshots/desktop/onboarding-signin.png" width="200" alt="Sign-in screen"></a> | Email + password sign-in / sign-up (multi-user mode). |
+| **Settings (BYOK)** | <a href="docs/screenshots/desktop/settings-popover.png"><img src="docs/screenshots/desktop/settings-popover.png" width="200" alt="Settings popover"></a> | Encrypted OpenAI key + model picker; the key is never returned to the browser. |
+| **Your plan** | <a href="docs/screenshots/desktop/plan-overview.png"><img src="docs/screenshots/desktop/plan-overview.png" width="200" alt="Plan summary"></a> | Daily target, maintenance/deficit, BMI now & at goal, macro targets. |
+| **Weight progress** | <a href="docs/screenshots/desktop/weight-progress-chart.png"><img src="docs/screenshots/desktop/weight-progress-chart.png" width="200" alt="Progress chart"></a> | Projected path vs. actual check-ins with a "today" marker. |
+| **Weight check-in** | <a href="docs/screenshots/desktop/weight-checkin.png"><img src="docs/screenshots/desktop/weight-checkin.png" width="200" alt="Weight check-in"></a> | Log today's weight; recent history with quick removal. |
+| **Log by text** | <a href="docs/screenshots/desktop/calorie-text-input.png"><img src="docs/screenshots/desktop/calorie-text-input.png" width="200" alt="Text input"></a> | Type "2 idlis, 1 masala dosa" for an instant estimate. |
+| **Add manually** | <a href="docs/screenshots/desktop/calorie-manual-entry.png"><img src="docs/screenshots/desktop/calorie-manual-entry.png" width="200" alt="Manual entry"></a> | Enter a name + calories directly, no AI call. |
+| **Daily goal** | <a href="docs/screenshots/desktop/calorie-daily-goal.png"><img src="docs/screenshots/desktop/calorie-daily-goal.png" width="200" alt="Daily goal"></a> | Remaining (or over) countdown with a progress bar. |
+| **Calorie log** | <a href="docs/screenshots/desktop/calorie-log.png"><img src="docs/screenshots/desktop/calorie-log.png" width="200" alt="Calorie log"></a> | Day navigator, totals, macro breakdown, CSV/JSON export. |
+| **Photo upload** | <a href="docs/screenshots/desktop/meal-photo-upload.png"><img src="docs/screenshots/desktop/meal-photo-upload.png" width="200" alt="Photo upload"></a> | Drag, drop, or paste a food photo to estimate calories. |
+| **Live camera** | <a href="docs/screenshots/desktop/meal-photo-camera.png"><img src="docs/screenshots/desktop/meal-photo-camera.png" width="200" alt="Camera capture"></a> | Snap a plate in-app (shutter + flip camera). |
+| **Fasting** | <a href="docs/screenshots/desktop/fasting-timer.png"><img src="docs/screenshots/desktop/fasting-timer.png" width="200" alt="Fasting timer"></a> | Pick a window (16:8, OMAD…); live timer + progress bar. |
+| **Food suggestions** | <a href="docs/screenshots/desktop/ai-suggestions.png"><img src="docs/screenshots/desktop/ai-suggestions.png" width="200" alt="Food suggestions"></a> | "What should I eat?" tuned to your remaining budget. |
+| **Ask the coach** | <a href="docs/screenshots/desktop/ai-coach.png"><img src="docs/screenshots/desktop/ai-coach.png" width="200" alt="Ask the coach"></a> | Free-form Q&A grounded in today's calories & macros. |
+| **Performance review** | <a href="docs/screenshots/desktop/analytics-performance.png"><img src="docs/screenshots/desktop/analytics-performance.png" width="200" alt="Performance review"></a> | "How am I doing?" — weight, calorie, macro & fasting read. |
+| **End the day** | <a href="docs/screenshots/desktop/analytics-endday.png"><img src="docs/screenshots/desktop/analytics-endday.png" width="200" alt="End the day"></a> | Encouraging today / week / month / goal summary. |
+
+### Mobile
+
+FoodCal is mobile-first. iPhone-sized captures:
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/screenshots/mobile/onboarding-signin.png" width="150" alt="Sign in (mobile)"><br><sub>Sign in</sub></td>
+    <td align="center"><img src="docs/screenshots/mobile/plan-overview.png" width="150" alt="Plan (mobile)"><br><sub>Your plan</sub></td>
+    <td align="center"><img src="docs/screenshots/mobile/calorie-log.png" width="150" alt="Log (mobile)"><br><sub>Calorie log</sub></td>
+    <td align="center"><img src="docs/screenshots/mobile/meal-photo-upload.png" width="150" alt="Photo (mobile)"><br><sub>Photo upload</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/mobile/meal-photo-camera.png" width="150" alt="Camera (mobile)"><br><sub>Live camera</sub></td>
+    <td align="center"><img src="docs/screenshots/mobile/fasting-timer.png" width="150" alt="Fasting (mobile)"><br><sub>Fasting</sub></td>
+    <td align="center"><img src="docs/screenshots/mobile/calorie-daily-goal.png" width="150" alt="Daily goal (mobile)"><br><sub>Daily goal</sub></td>
+    <td align="center"><img src="docs/screenshots/mobile/ai-suggestions.png" width="150" alt="Suggestions (mobile)"><br><sub>Suggestions</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/mobile/ai-coach.png" width="150" alt="Ask coach (mobile)"><br><sub>Ask the coach</sub></td>
+    <td align="center"><img src="docs/screenshots/mobile/analytics-performance.png" width="150" alt="Review (mobile)"><br><sub>Review</sub></td>
+    <td align="center"><img src="docs/screenshots/mobile/analytics-endday.png" width="150" alt="End day (mobile)"><br><sub>End the day</sub></td>
+    <td align="center"><img src="docs/screenshots/mobile/full-app.png" width="150" alt="Full app (mobile)"><br><sub>Full app</sub></td>
+  </tr>
+</table>
+
+### Demos
+
+Short screen recordings are produced with the guide in
+[`docs/demos/`](docs/demos/README.md) (record → `docs/demos/make-gifs.sh`).
 
 ---
 
