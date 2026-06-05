@@ -60,7 +60,10 @@ export async function fetchLog(): Promise<LogEntry[]> {
   return (await res.json()) as LogEntry[];
 }
 
-export async function addLogEntry(result: AnalysisResult): Promise<LogEntry> {
+export async function addLogEntry(
+  result: AnalysisResult,
+  addedAt?: number
+): Promise<LogEntry> {
   const res = await fetch("/api/log", {
     method: "POST",
     headers: await authHeaders(true),
@@ -68,6 +71,7 @@ export async function addLogEntry(result: AnalysisResult): Promise<LogEntry> {
       foodName: result.foodName,
       calories: result.calories,
       nutrition: result.nutrition,
+      ...(addedAt ? { addedAt } : {}),
     }),
   });
   if (!res.ok) throw await asError(res, "Could not add to your log.");
@@ -77,12 +81,13 @@ export async function addLogEntry(result: AnalysisResult): Promise<LogEntry> {
 /** Add an entry by hand (name + calories), skipping AI analysis. */
 export async function addManualEntry(
   foodName: string,
-  calories: number
+  calories: number,
+  addedAt?: number
 ): Promise<LogEntry> {
   const res = await fetch("/api/log", {
     method: "POST",
     headers: await authHeaders(true),
-    body: JSON.stringify({ foodName, calories }),
+    body: JSON.stringify({ foodName, calories, ...(addedAt ? { addedAt } : {}) }),
   });
   if (!res.ok) throw await asError(res, "Could not add to your log.");
   return (await res.json()) as LogEntry;

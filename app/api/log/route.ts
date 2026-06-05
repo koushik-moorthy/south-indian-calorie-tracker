@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getUserClient, LOG_TABLE } from "@/lib/supabase";
+import { isoFromAddedAt } from "@/lib/dates";
 import type { LogEntry, Nutrition } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -56,7 +57,7 @@ export async function POST(request: Request) {
   const auth = await getUserClient(request);
   if (!auth) return NextResponse.json({ error: "Not signed in." }, { status: 401 });
 
-  let body: { foodName?: string; calories?: number; nutrition?: Nutrition };
+  let body: { foodName?: string; calories?: number; nutrition?: Nutrition; addedAt?: number };
   try {
     body = await request.json();
   } catch {
@@ -69,14 +70,18 @@ export async function POST(request: Request) {
   }
 
   try {
+    const createdAt = isoFromAddedAt(body.addedAt);
+    const row: Record<string, unknown> = {
+      user_id: auth.user.id,
+      food_name: foodName,
+      calories: Math.max(0, Math.round(Number(body.calories) || 0)),
+      nutrition: body.nutrition ?? null,
+    };
+    if (createdAt) row.created_at = createdAt;
+
     const { data, error } = await auth.supabase
       .from(LOG_TABLE)
-      .insert({
-        user_id: auth.user.id,
-        food_name: foodName,
-        calories: Math.max(0, Math.round(Number(body.calories) || 0)),
-        nutrition: body.nutrition ?? null,
-      })
+      .insert(row)
       .select("id, food_name, calories, nutrition, created_at")
       .single();
     if (error) throw error;
