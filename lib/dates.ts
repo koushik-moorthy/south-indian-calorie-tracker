@@ -42,6 +42,38 @@ export function listDayKeys(entries: { addedAt: number }[]): string[] {
   return [...keys].sort().reverse();
 }
 
+/**
+ * Epoch-ms for a day key ("YYYY-MM-DD") at the current local wall-clock time.
+ * Built from local components, so `dayKey(timestampForDayKey(key))` === key.
+ * Using "now"'s time-of-day keeps several entries added to one past day in
+ * insertion order (the log is sorted by created_at ascending).
+ */
+export function timestampForDayKey(key: string, now: number | Date = Date.now()): number {
+  const ref = typeof now === "number" ? new Date(now) : now;
+  const [y, m, d] = key.split("-").map(Number);
+  return new Date(
+    y,
+    m - 1,
+    d,
+    ref.getHours(),
+    ref.getMinutes(),
+    ref.getSeconds(),
+    ref.getMilliseconds()
+  ).getTime();
+}
+
+/**
+ * Validate an incoming `addedAt` (expected epoch-ms) and return it as an ISO
+ * string suitable for a `created_at` column, or `undefined` when absent/invalid
+ * (caller then lets the DB default apply).
+ */
+export function isoFromAddedAt(value: unknown): string | undefined {
+  if (typeof value !== "number" || !Number.isFinite(value) || value <= 0) {
+    return undefined;
+  }
+  return new Date(value).toISOString();
+}
+
 /** Human label for a day key relative to today: "Today", "Yesterday", or a date. */
 export function formatDayLabel(key: string, today: string): string {
   if (key === today) return "Today";

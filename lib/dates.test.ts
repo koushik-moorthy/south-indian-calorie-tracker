@@ -6,6 +6,8 @@ import {
   entriesForDay,
   listDayKeys,
   formatDayLabel,
+  timestampForDayKey,
+  isoFromAddedAt,
 } from "@/lib/dates";
 
 describe("dayKey", () => {
@@ -53,6 +55,47 @@ describe("listDayKeys", () => {
 
   it("returns an empty array for no entries", () => {
     expect(listDayKeys([])).toEqual([]);
+  });
+});
+
+describe("timestampForDayKey", () => {
+  it("round-trips through dayKey", () => {
+    const ts = timestampForDayKey("2024-03-15");
+    expect(dayKey(ts)).toBe("2024-03-15");
+  });
+
+  it("uses the current wall-clock time on the target day", () => {
+    const now = new Date(2025, 0, 1, 14, 30, 45); // 14:30:45 local
+    const ts = timestampForDayKey("2024-07-09", now);
+    const d = new Date(ts);
+    expect(d.getFullYear()).toBe(2024);
+    expect(d.getMonth()).toBe(6); // July
+    expect(d.getDate()).toBe(9);
+    expect(d.getHours()).toBe(14);
+    expect(d.getMinutes()).toBe(30);
+    expect(d.getSeconds()).toBe(45);
+  });
+
+  it("round-trips across month and year boundaries", () => {
+    expect(dayKey(timestampForDayKey("2024-12-31"))).toBe("2024-12-31");
+    expect(dayKey(timestampForDayKey("2025-01-01"))).toBe("2025-01-01");
+  });
+});
+
+describe("isoFromAddedAt", () => {
+  it("converts a valid epoch-ms number to an ISO string", () => {
+    const ms = Date.UTC(2024, 5, 9, 12, 0, 0);
+    expect(isoFromAddedAt(ms)).toBe(new Date(ms).toISOString());
+  });
+
+  it("returns undefined for missing, non-numeric, or non-positive input", () => {
+    expect(isoFromAddedAt(undefined)).toBeUndefined();
+    expect(isoFromAddedAt(null)).toBeUndefined();
+    expect(isoFromAddedAt("123")).toBeUndefined();
+    expect(isoFromAddedAt(0)).toBeUndefined();
+    expect(isoFromAddedAt(-5)).toBeUndefined();
+    expect(isoFromAddedAt(Number.NaN)).toBeUndefined();
+    expect(isoFromAddedAt(Number.POSITIVE_INFINITY)).toBeUndefined();
   });
 });
 
