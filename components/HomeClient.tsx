@@ -30,7 +30,7 @@ import {
   removeWeight,
   addManualEntry,
 } from "@/lib/api";
-import { entriesForDay, todayKey } from "@/lib/dates";
+import { entriesForDay, todayKey, timestampForDayKey, formatDayLabel } from "@/lib/dates";
 import { defaultFasting, type FastingState } from "@/lib/fasting";
 import type { AnalysisResult, LogEntry, Nutrition, WeightEntry } from "@/lib/types";
 import type { StoredPlan } from "@/lib/plan";
@@ -52,6 +52,7 @@ export default function HomeClient({ authConfig }: { authConfig: PublicAuthConfi
   const [authReady, setAuthReady] = useState(false);
 
   const [entries, setEntries] = useState<LogEntry[]>([]);
+  const [selectedDay, setSelectedDay] = useState<string>(() => todayKey());
   const [logLoading, setLogLoading] = useState(true);
   const [logError, setLogError] = useState<string | null>(null);
   const [dailyGoal, setDailyGoal] = useState<number | null>(null);
@@ -151,12 +152,16 @@ export default function HomeClient({ authConfig }: { authConfig: PublicAuthConfi
   }
 
   async function handleAddToLog(r: AnalysisResult) {
-    const saved = await addLogEntry(r);
+    const today = todayKey();
+    const addedAt = selectedDay === today ? undefined : timestampForDayKey(selectedDay);
+    const saved = await addLogEntry(r, addedAt);
     setEntries((prev) => [...prev, saved]);
   }
 
   async function handleManualAdd(foodName: string, calories: number) {
-    const saved = await addManualEntry(foodName, calories);
+    const today = todayKey();
+    const addedAt = selectedDay === today ? undefined : timestampForDayKey(selectedDay);
+    const saved = await addManualEntry(foodName, calories, addedAt);
     setEntries((prev) => [...prev, saved]);
   }
 
@@ -251,6 +256,21 @@ export default function HomeClient({ authConfig }: { authConfig: PublicAuthConfi
             />
           </div>
 
+          {selectedDay !== todayKey() && (
+            <div className="mb-4 flex items-center justify-between gap-3 rounded-lg border border-brand-200 bg-brand-50 px-4 py-2.5 text-sm dark:border-brand-500/30 dark:bg-brand-500/10">
+              <span className="font-medium text-brand-800 dark:text-brand-200">
+                Adding to {formatDayLabel(selectedDay, todayKey())}
+              </span>
+              <button
+                type="button"
+                onClick={() => setSelectedDay(todayKey())}
+                className="font-medium text-brand-700 hover:underline dark:text-brand-400"
+              >
+                Jump to today
+              </button>
+            </div>
+          )}
+
           <div className="space-y-4">
             <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
               <ImageUploadForm onAddToLog={handleAddToLog} />
@@ -261,7 +281,10 @@ export default function HomeClient({ authConfig }: { authConfig: PublicAuthConfi
             </section>
 
             <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-              <ManualEntryForm onAdd={handleManualAdd} />
+              <ManualEntryForm
+                onAdd={handleManualAdd}
+                dayLabel={formatDayLabel(selectedDay, todayKey())}
+              />
             </section>
           </div>
 
@@ -274,7 +297,7 @@ export default function HomeClient({ authConfig }: { authConfig: PublicAuthConfi
           <div className="mt-6">
             <DailyGoal
               goal={dailyGoal}
-              consumed={totalCalories(entriesForDay(entries, todayKey()))}
+              consumed={totalCalories(entriesForDay(entries, selectedDay))}
               onSave={handleSaveGoal}
             />
           </div>
@@ -298,6 +321,8 @@ export default function HomeClient({ authConfig }: { authConfig: PublicAuthConfi
               onRemove={handleRemove}
               onUpdate={handleUpdate}
               onClearDay={handleClearDay}
+              selectedDay={selectedDay}
+              onSelectDay={setSelectedDay}
             />
           </div>
 

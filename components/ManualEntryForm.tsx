@@ -3,11 +3,13 @@
 import { useState } from "react";
 
 interface Props {
-  /** Add the entry straight to today's log. Resolves once saved. */
+  /** Add the entry to the active day's log. Resolves once saved. */
   onAdd: (foodName: string, calories: number) => Promise<void>;
+  /** Human label for the active day, e.g. "Today" or "Yesterday". */
+  dayLabel: string;
 }
 
-export default function ManualEntryForm({ onAdd }: Props) {
+export default function ManualEntryForm({ onAdd, dayLabel }: Props) {
   const [name, setName] = useState("");
   const [calories, setCalories] = useState("");
   const [saving, setSaving] = useState(false);
@@ -35,7 +37,7 @@ export default function ManualEntryForm({ onAdd }: Props) {
       await onAdd(food, kcal);
       setName("");
       setCalories("");
-      setSavedMsg(`Added “${food}” to today's log.`);
+      setSavedMsg(`Added “${food}” to ${dayLabel}.`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not add to your log.");
     } finally {

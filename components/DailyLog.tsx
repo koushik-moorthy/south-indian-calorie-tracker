@@ -26,6 +26,10 @@ interface Props {
   ) => Promise<void>;
   /** Clear all entries on the given day key ("YYYY-MM-DD"). */
   onClearDay: (dayKey: string) => void;
+  /** The active day key ("YYYY-MM-DD"), shared with the entry forms. */
+  selectedDay: string;
+  /** Change the active day. */
+  onSelectDay: (key: string) => void;
 }
 
 export default function DailyLog({
@@ -34,8 +38,9 @@ export default function DailyLog({
   onRemove,
   onUpdate,
   onClearDay,
+  selectedDay,
+  onSelectDay,
 }: Props) {
-  const [selectedDay, setSelectedDay] = useState(() => todayKey());
   const [editingId, setEditingId] = useState<string | null>(null);
 
   const today = todayKey();
@@ -66,17 +71,13 @@ export default function DailyLog({
 
       {loading ? (
         <p className="py-6 text-center text-sm text-slate-400">Loading your log…</p>
-      ) : entries.length === 0 ? (
-        <p className="py-6 text-center text-sm text-slate-400">
-          No items yet. Analyze a food and add it to your log.
-        </p>
       ) : (
         <>
           {/* Day navigator */}
           <div className="mb-4 flex items-center justify-between gap-2">
             <button
               type="button"
-              onClick={() => setSelectedDay((k) => shiftDayKey(k, -1))}
+              onClick={() => onSelectDay(shiftDayKey(selectedDay, -1))}
               aria-label="Previous day"
               className={navBtn}
             >
@@ -89,7 +90,7 @@ export default function DailyLog({
               {!isToday && (
                 <button
                   type="button"
-                  onClick={() => setSelectedDay(today)}
+                  onClick={() => onSelectDay(today)}
                   className="text-xs font-medium text-brand-700 hover:underline dark:text-brand-500"
                 >
                   Jump to today
@@ -98,7 +99,7 @@ export default function DailyLog({
             </div>
             <button
               type="button"
-              onClick={() => setSelectedDay((k) => shiftDayKey(k, 1))}
+              onClick={() => onSelectDay(shiftDayKey(selectedDay, 1))}
               disabled={isToday}
               aria-label="Next day"
               className={navBtn}
