@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { AnalysisResult } from "@/lib/types";
 import { analyzeText } from "@/lib/api";
 import ResultCard from "./ResultCard";
@@ -15,6 +15,15 @@ export default function TextInputForm({ onAddToLog }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [adding, setAdding] = useState(false);
+  const resultRef = useRef<HTMLDivElement>(null);
+
+  // When a fresh analysis arrives, scroll the result into view so it's clear
+  // the response is ready (it can render below the fold on long pages / mobile).
+  useEffect(() => {
+    if (result) {
+      resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [result]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -75,7 +84,11 @@ export default function TextInputForm({ onAddToLog }: Props) {
         {error && <p className="text-sm text-red-600">{error}</p>}
       </form>
 
-      {result && <ResultCard result={result} onAdd={handleAdd} saving={adding} />}
+      {result && (
+        <div ref={resultRef} className="scroll-mt-4">
+          <ResultCard result={result} onAdd={handleAdd} saving={adding} />
+        </div>
+      )}
     </div>
   );
 }

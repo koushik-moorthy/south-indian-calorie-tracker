@@ -25,6 +25,15 @@ export default function ImageUploadForm({ onAddToLog }: Props) {
   const [adding, setAdding] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const previewUrlRef = useRef<string | null>(null);
+  const resultRef = useRef<HTMLDivElement>(null);
+
+  // When a fresh analysis arrives, scroll the result into view so it's clear
+  // the response is ready (it can render below the fold on long pages / mobile).
+  useEffect(() => {
+    if (result) {
+      resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [result]);
 
   // Validate a candidate file (from upload, paste, or drop) and set preview.
   const acceptFile = useCallback((selected: File | null) => {
@@ -235,7 +244,11 @@ export default function ImageUploadForm({ onAddToLog }: Props) {
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 
-      {result && <ResultCard result={result} onAdd={handleAdd} saving={adding} />}
+      {result && (
+        <div ref={resultRef} className="scroll-mt-4">
+          <ResultCard result={result} onAdd={handleAdd} saving={adding} />
+        </div>
+      )}
     </div>
   );
 }
